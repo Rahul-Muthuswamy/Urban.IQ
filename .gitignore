@@ -12,3 +12,11 @@
 __pycache__
 .vscode
 frontend/package-lock.json
+venv/
+venv/
+.venv/
+__pycache__/
+.idea/
+.vscode/
+.env
+frontend/node_modules/
