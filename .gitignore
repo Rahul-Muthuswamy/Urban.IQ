@@ -20,3 +20,4 @@ __pycache__/
 .vscode/
 .env
 frontend/node_modules/
+testingfiles/
