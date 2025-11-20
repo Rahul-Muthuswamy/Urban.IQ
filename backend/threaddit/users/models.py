@@ -62,6 +62,20 @@ class User(db.Model, UserMixin):
             res = uploader.destroy(self.avatar.split("/")[-1])
             print(f"Cloudinary Image Destory Response for {self.username}: ", res)
 
+    def change_password(self, old_password: str, new_password: str) -> tuple[bool, str]:
+        """
+        Change user password after validating old password.
+        Returns (success: bool, message: str)
+        """
+        from bcrypt import checkpw, hashpw, gensalt
+        
+        if not checkpw(old_password.encode(), self.password_hash.encode()):
+            return False, "Incorrect old password"
+        
+        self.password_hash = hashpw(new_password.encode(), gensalt()).decode("utf-8")
+        db.session.commit()
+        return True, "Password changed successfully"
+
     def has_role(self, role):
         return role in {r.role.slug for r in self.user_role}
 
@@ -124,6 +138,24 @@ class UserRegisterValidator(ma.SQLAlchemySchema):
     )
     email = fields.Email(required=True, validate=[email_validator])
     password = fields.Str(required=True, validate=[fields.validate.Length(min=8)])
+
+
+def password_strength_validator(password: str):
+    """Validates password strength - at least 8 characters with mix of letters and numbers."""
+    if len(password) < 8:
+        raise ValidationError("Password must be at least 8 characters long")
+    if not any(char.isdigit() for char in password):
+        raise ValidationError("Password must contain at least one number")
+    if not any(char.isalpha() for char in password):
+        raise ValidationError("Password must contain at least one letter")
+
+
+class PasswordChangeValidator(ma.SQLAlchemySchema):
+    class Meta:
+        model = User
+
+    old_password = fields.Str(required=True, validate=[fields.validate.Length(min=8)])
+    new_password = fields.Str(required=True, validate=[fields.validate.Length(min=8), password_strength_validator])
 
 
 class UsersKarma(db.Model):

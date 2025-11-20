@@ -20,7 +20,7 @@ def user_login():
         UserLoginValidator().load(login_form)
         user_info = User.query.filter_by(email=login_form.get("email")).first()
         if user_info and checkpw(login_form.get("password").encode(), user_info.password_hash.encode()):
-            login_user(user_info)
+            login_user(user_info, remember=True)  # remember=True ensures longer session
             return jsonify(user_info.as_dict()), 200
     return jsonify({"message": "Invalid credentials"}), 401
 
