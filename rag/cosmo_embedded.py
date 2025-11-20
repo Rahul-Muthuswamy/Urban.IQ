@@ -82,6 +82,38 @@ def extract_text(data):
             f"NO means: {data['no_vote_meaning']}"
         )
 
+    # polling_locations_clean.json
+    if isinstance(data, list) and data and "site_name" in data[0]:
+        lines = []
+        for location in data:
+            # Extract location information
+            borough = location.get('borough', '').strip()
+            site_name = location.get('site_name', '').strip()
+            address = location.get('address', '').strip()
+            zipcode = location.get('zipcode', '').strip()
+            latitude = location.get('latitude', '').strip()
+            longitude = location.get('longitude', '').strip()
+            
+            # Build location text with available information
+            location_text = f"Polling Location: {site_name}"
+            
+            if address:
+                location_text += f" | Address: {address}"
+            
+            if borough:
+                location_text += f" | Borough: {borough}"
+            
+            if zipcode:
+                location_text += f" | ZIP: {zipcode}"
+            
+            # Add coordinates if available
+            if latitude and longitude:
+                location_text += f" | Coordinates: {latitude}, {longitude}"
+            
+            lines.append(location_text)
+        
+        return " ".join(lines)
+
     return json.dumps(data)
 
 
@@ -130,7 +162,9 @@ def chunk_text(text, max_length=6000):
 # MAIN FUNCTION — Upload all embeddings into Cosmos DB
 # ----------------------------------------------------------
 def process_and_upload():
-    folder = "./docs"
+    # Get the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    folder = os.path.join(script_dir, "docs")
 
     print("\n🚀 Starting embedding upload to CosmosDB...\n")
 
