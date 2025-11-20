@@ -101,11 +101,15 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 CREATE TABLE public.subthreads (
     id integer NOT NULL,
-    name character varying(20) NOT NULL,
-    description text,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    name text NOT NULL,
+    title character varying(200) NOT NULL,
+    description text NOT NULL,
+    rules text,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     logo text,
-    created_by integer
+    banner_url text,
+    created_by integer NOT NULL
 );
 
 CREATE VIEW public.post_info AS
