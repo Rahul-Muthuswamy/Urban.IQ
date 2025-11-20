@@ -1,0 +1,158 @@
+[
+  {
+    "id": "voting_eligibility_1",
+    "category": "Voter Registration",
+    "question": "What are the qualifications for voter registration?",
+    "answer": "To register to vote you must: (1) Be a United States citizen; (2) Be 18 years old by the date of the election; (3) Be a resident of the state and county/city/village for at least 30 days before the election; (4) Not be in prison for a felony conviction; (5) Not be adjudged mentally incompetent by a court; (6) Not claim the right to vote elsewhere."
+  },
+  {
+    "id": "voting_eligibility_2",
+    "category": "Voter Registration",
+    "question": "Can 16 or 17 year olds preregister to vote?",
+    "answer": "Yes. A person at least sixteen years of age who meets all other voter registration qualifications may preregister. They will be automatically registered upon turning 18."
+  },
+  {
+    "id": "mail_registration_1",
+    "category": "Registration Methods",
+    "question": "Where can I get a mail registration application?",
+    "answer": "You can request a mail registration application by emailing vote@boe.nyc.ny.us with your borough in the subject line, calling 1-866-VOTE-NYC (or 212-VOTE-NYC from outside NYC), picking one up at a post office, library, or motor vehicle office, or downloading it from the Board of Elections website."
+  },
+  {
+    "id": "in_person_registration_1",
+    "category": "Registration Methods",
+    "question": "Can I register to vote in person?",
+    "answer": "Yes. You can register at many public agencies or at any borough Board of Elections office Monday–Friday between 9 AM and 5 PM. If you do not receive a registration card in 4–6 weeks, call 1-866-VOTE-NYC or 212-VOTE-NYC."
+  },
+  {
+    "id": "student_voting_1",
+    "category": "Special Cases",
+    "question": "How can a student vote if they study in NYC but live in another state?",
+    "answer": "A student may register in New York using their NYC residence. This new registration will cancel their previous voter registration in the other state."
+  },
+  {
+    "id": "registration_validity_1",
+    "category": "Voter Registration",
+    "question": "Do I have to register every year to vote?",
+    "answer": "No. Once registered, you remain permanently registered unless purged for inactivity, convicted of a felony with imprisonment, or adjudged mentally incompetent. Changes to name, address, or party enrollment require submitting a new registration application."
+  },
+  {
+    "id": "poll_location_1",
+    "category": "Polling Information",
+    "question": "How will I know where to vote?",
+    "answer": "You should receive a notice in August with your polling place and election/assembly district. You can also email vote@boe.nyc.ny.us or use the online Poll Site Address Locator."
+  },
+  {
+    "id": "ballot_petitions_1",
+    "category": "Ballot Access",
+    "question": "How do candidates get on the ballot?",
+    "answer": "Candidates typically file petitions containing a required number of signatures. Requirements vary by office and party. Some candidates are nominated by political committees or conventions."
+  },
+  {
+    "id": "ballot_petitions_2",
+    "category": "Ballot Access",
+    "question": "Who can sign a petition?",
+    "answer": "Enrolled party members in the appropriate district may sign petitions for party candidates. Any registered voter in the district may sign petitions for independent candidates if they have not already signed for another candidate."
+  },
+  {
+    "id": "petition_concern_1",
+    "category": "Ballot Access",
+    "question": "Should I be concerned about signing a petition?",
+    "answer": "No. Signing a petition is a normal and important way to participate in the electoral process."
+  },
+  {
+    "id": "primary_election_1",
+    "category": "Election Types",
+    "question": "What is a primary election?",
+    "answer": "A primary election occurs within political parties to nominate candidates or elect party officials. If there is no contest, no primary is held."
+  },
+  {
+    "id": "party_enrollment_1",
+    "category": "Voter Registration",
+    "question": "Why should I enroll in a political party?",
+    "answer": "You must be enrolled in a party to vote in its primary. In the general election, you may vote for any candidate regardless of party."
+  },
+  {
+    "id": "party_enrollment_2",
+    "category": "Voter Registration",
+    "question": "How do I enroll in a political party?",
+    "answer": "You can voluntarily enroll by selecting a party on the voter registration form, whether you are registering for the first time or re-registering with changes."
+  },
+  {
+    "id": "absentee_1",
+    "category": "Absentee Voting",
+    "question": "What if I cannot vote on Election Day?",
+    "answer": "You may vote by absentee ballot if you will be out of town, ill, or otherwise unable to go to the polls. You may also vote up to nine days early under the early voting system."
+  },
+  {
+    "id": "absentee_2",
+    "category": "Absentee Voting",
+    "question": "How can I get an absentee ballot?",
+    "answer": "You may request an absentee ballot by mail, phone, email, or by downloading the form from the Board of Elections website."
+  },
+  {
+    "id": "paper_ballot_1",
+    "category": "Voting Procedure",
+    "question": "How do I mark a paper ballot?",
+    "answer": "Fill in the oval next to your choice using blue or black ink. Do not make stray marks. Use the write-in box to vote for a candidate not listed. Propositions appear on the back of the ballot."
+  },
+  {
+    "id": "id_requirement_1",
+    "category": "Polling Requirements",
+    "question": "What identification do I need to vote?",
+    "answer": "First-time voters must provide a driver's license number, non-driver ID number, or the last four digits of their SSN. If not provided, acceptable documents include photo ID, utility bill, bank statement, government check, or other government document showing name and address."
+  },
+  {
+    "id": "poll_procedure_1",
+    "category": "Polling Procedure",
+    "question": "What do I do when I arrive at the poll site?",
+    "answer": "Go to your election district table, sign next to your signature on the poll list, receive your ballot, mark it in a privacy booth, and scan it at the ballot scanner."
+  },
+  {
+    "id": "affidavit_1",
+    "category": "Polling Issue",
+    "question": "What if I am not permitted to vote?",
+    "answer": "If your name is not on the poll list, verify your district. If you believe you are eligible, ask for an affidavit ballot. Your vote will count if the Board confirms your eligibility."
+  },
+  {
+    "id": "scanner_1",
+    "category": "Voting Technology",
+    "question": "How does the ballot scanner work?",
+    "answer": "Insert your ballot into the scanner after selecting your language. The scanner will record your vote."
+  },
+  {
+    "id": "bmd_1",
+    "category": "Voting Technology",
+    "question": "What is the Ballot Marking Device (BMD)?",
+    "answer": "The BMD allows voters to see or hear the ballot, navigate using touchscreen or accessible devices, and print a marked ballot to be scanned."
+  },
+  {
+    "id": "assistance_1",
+    "category": "Accessibility",
+    "question": "Can I get help while voting?",
+    "answer": "Yes. If you have a disability or cannot read the ballot, you may receive help from a friend, relative, or election inspector."
+  },
+  {
+    "id": "jury_duty_1",
+    "category": "Voter Concerns",
+    "question": "Will registering to vote cause me to be called for jury duty?",
+    "answer": "Jury duty lists come from taxpayers and licensed drivers as well as voter rolls. You may still be called even if you do not register. Voting should not be avoided for this reason."
+  },
+  {
+    "id": "felony_1",
+    "category": "Voter Rights",
+    "question": "Can a felony conviction affect my right to vote?",
+    "answer": "You cannot vote if you are currently incarcerated for a felony conviction. You may vote if you were sentenced to probation, received a suspended sentence, or completed your prison term."
+  },
+  {
+    "id": "misdemeanor_1",
+    "category": "Voter Rights",
+    "question": "Can a misdemeanor conviction affect my right to vote?",
+    "answer": "No. You may register and vote even if convicted of a misdemeanor, including while incarcerated."
+  },
+  {
+    "id": "boe_contacts",
+    "category": "Contact Information",
+    "question": "What are the Board of Elections office addresses and phone numbers?",
+    "answer": "Executive Office: 32-42 Broadway, 7th Fl, NYC, NY 10004, Tel: 212-487-5400. Queens: 118-35 Queens Blvd, 11th Fl, Forest Hills, NY 11375, Tel: 718-730-6730. Bronx: 1780 Grand Concourse, 5th Fl, Bronx, NY 10457, Tel: 718-299-9017. Manhattan: 200 Varick Street, 10th Fl, NYC, NY 10014, Tel: 212-886-2100. Brooklyn: 345 Adams Street, 4th Fl, Brooklyn, NY 11201, Tel: 718-797-8800. Staten Island: 1 Edgewater Plaza, 4th Fl, Staten Island, NY 10305, Tel: 718-876-0079."
+  }
+]

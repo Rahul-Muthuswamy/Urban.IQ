@@ -1,0 +1,42 @@
+{
+  "id": "ny_general_election_2025_important_dates",
+  "type": "election_dates",
+  "election_name": "New York General Election 2025",
+  "election_date": "2025-11-04",
+  "jurisdiction": "NYC",
+  "items": [
+    {
+      "title": "Last day to apply for absentee ballot online or by mail",
+      "description": "Voters must submit their absentee ballot application either online or by mail by this date.",
+      "deadline": "2025-10-25"
+    },
+    {
+      "title": "Last day to apply for absentee ballot in person",
+      "description": "Voters may apply for an absentee ballot in person at their county board of elections until this date.",
+      "deadline": "2025-11-03"
+    },
+    {
+      "title": "Last day to mail absentee ballot",
+      "description": "Absentee ballots must be mailed with a postmark no later than Election Day.",
+      "deadline": "2025-11-04"
+    },
+    {
+      "title": "Deadline to drop off absentee ballot at County Board of Elections",
+      "description": "Voters may drop off their completed absentee ballot at the County Board of Elections by this time.",
+      "deadline": "2025-11-04T21:00:00"
+    },
+    {
+      "title": "Drop off absentee ballot at early voting sites",
+      "description": "Voters may drop off their absentee ballot at any early voting poll site during the early voting period.",
+      "start_date": "2025-10-25",
+      "end_date": "2025-11-02"
+    },
+    {
+      "title": "Drop off absentee ballot at Election Day poll site",
+      "description": "Voters may drop off their absentee ballot at any Election Day poll site until polls close.",
+      "deadline": "2025-11-04T21:00:00"
+    }
+  ],
+  "source_url": "https://www.vote.nyc/page/all-important-dates",
+  "last_updated": "2025-11-17T00:00:00Z"
+}
