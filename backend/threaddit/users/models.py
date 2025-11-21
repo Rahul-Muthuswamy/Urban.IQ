@@ -63,10 +63,7 @@ class User(db.Model, UserMixin):
             print(f"Cloudinary Image Destory Response for {self.username}: ", res)
 
     def change_password(self, old_password: str, new_password: str) -> tuple[bool, str]:
-        """
-        Change user password after validating old password.
-        Returns (success: bool, message: str)
-        """
+
         from bcrypt import checkpw, hashpw, gensalt
         
         if not checkpw(old_password.encode(), self.password_hash.encode()):
@@ -141,7 +138,6 @@ class UserRegisterValidator(ma.SQLAlchemySchema):
 
 
 def password_strength_validator(password: str):
-    """Validates password strength - at least 8 characters with mix of letters and numbers."""
     if len(password) < 8:
         raise ValidationError("Password must be at least 8 characters long")
     if not any(char.isdigit() for char in password):

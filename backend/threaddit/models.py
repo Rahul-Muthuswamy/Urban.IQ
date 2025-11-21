@@ -30,7 +30,8 @@ class UserRole(db.Model):
     def add_moderator(cls, user_id, subthread_id):
         check_mod = UserRole.query.filter_by(user_id=user_id, subthread_id=subthread_id, role_id=1).first()
         if check_mod:
-            return jsonify({"message": "Moderator already exists"}), 400
+            # Moderator already exists, silently return (idempotent operation)
+            return
         new_mod = UserRole(user_id=user_id, subthread_id=subthread_id, role_id=1)
         db.session.add(new_mod)
         db.session.commit()

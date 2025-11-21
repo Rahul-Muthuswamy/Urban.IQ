@@ -70,15 +70,12 @@ def get_all_thread():
 
 @threads.route("/subthread/all", methods=["GET"])
 def get_all_subthreads():
-    """Get all communities with minimal info (name, logo, title)"""
     subthreads = Subthread.query.order_by(Subthread.created_at.desc()).all()
     return jsonify([s.as_dict_minimal() for s in subthreads]), 200
 
 
 @threads.route("/subthread/<name>", methods=["GET"])
 def get_subthread_by_name(name):
-    """Get full community details by name"""
-    # Ensure name starts with t/
     if not name.startswith("t/"):
         name = f"t/{name.lower()}"
     else:
@@ -90,7 +87,6 @@ def get_subthread_by_name(name):
     
     cur_user_id = current_user.id if current_user.is_authenticated else None
     
-    # Get posts for this subthread
     posts = PostInfo.query.filter_by(thread_id=subthread.id).order_by(PostInfo.created_at.desc()).limit(20).all()
     posts_data = [p.as_dict(cur_user_id) for p in posts]
     
@@ -102,7 +98,6 @@ def get_subthread_by_name(name):
 
 @threads.route("/threads/<thread_name>")
 def get_thread_by_name(thread_name):
-    """Legacy endpoint - kept for backward compatibility"""
     thread_info = SubthreadInfo.query.filter_by(name=f"t/{thread_name}").first()
     subthread = Subthread.query.filter_by(name=f"t/{thread_name}").first()
     if not thread_info and subthread:
@@ -140,13 +135,11 @@ def del_subscription(tid):
 @threads.route("/subthread/create", methods=["POST"])
 @login_required
 def create_subthread():
-    """Create a new community/subthread with full details"""
     try:
         logo_image = request.files.get("logo")
         banner_image = request.files.get("banner")
         form_data = request.form.to_dict()
         
-        # Validate required fields using Marshmallow
         validator = SubthreadCreateValidator()
         validated_data = validator.load({
             "name": form_data.get("name"),
@@ -155,7 +148,6 @@ def create_subthread():
             "rules": form_data.get("rules"),
         })
         
-        # Prepare form_data with content types
         if logo_image:
             form_data["logo_content_type"] = "image"
             form_data["logo_url"] = None
@@ -172,10 +164,8 @@ def create_subthread():
         else:
             form_data["banner_content_type"] = None
         
-        # Create subthread
         subthread = Subthread.add(form_data, logo_image, banner_image, current_user.id)
         
-        # Auto-add creator as moderator
         UserRole.add_moderator(current_user.id, subthread.id)
         
         return jsonify({
@@ -194,6 +184,9 @@ def create_subthread():
         else:
             error_message = str(error_messages)
         return jsonify({"message": error_message}), 400
+    except ValueError as e:
+        # Handle Cloudinary configuration errors
+        return jsonify({"message": str(e)}), 400
     except Exception as e:
         return jsonify({"message": f"Error creating community: {str(e)}"}), 500
 
@@ -201,13 +194,11 @@ def create_subthread():
 @threads.route("/thread", methods=["POST"])
 @login_required
 def new_thread():
-    """Legacy endpoint - kept for backward compatibility"""
     image = request.files.get("media")
     form_data = request.form.to_dict()
     if not (name := form_data.get("name")) or not thread_name_regex.match(name):
         return jsonify({"message": "Thread name is required"}), 400
     
-    # Convert legacy format to new format
     form_data["title"] = form_data.get("title") or form_data.get("name")
     form_data["description"] = form_data.get("description") or ""
     form_data["logo_content_type"] = "image" if image else None

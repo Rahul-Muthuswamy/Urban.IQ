@@ -30,7 +30,6 @@ class Subthread(db.Model):
     @classmethod
     def add(cls, form_data, logo_image, banner_image, created_by):
         name = form_data.get("name")
-        # Ensure name is lowercase and starts with t/
         if not name.startswith("t/"):
             name = f"t/{name.lower()}"
         else:
@@ -63,6 +62,8 @@ class Subthread(db.Model):
 
     def handle_logo(self, content_type, image=None, url=None):
         if content_type == "image" and image:
+            if not app.config.get("CLOUDINARY_ENABLED"):
+                raise ValueError("Cloudinary is not configured. Please use URL-based images or configure Cloudinary credentials in .env file.")
             self.delete_logo()
             image_data = uploader.upload(image, public_id=f"{uuid.uuid4().hex}_{image.filename.rsplit('.')[0]}")
             url = f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}/image/upload/f_auto,q_auto/{image_data.get('public_id')}"
@@ -72,6 +73,8 @@ class Subthread(db.Model):
 
     def handle_banner(self, content_type, image=None, url=None):
         if content_type == "image" and image:
+            if not app.config.get("CLOUDINARY_ENABLED"):
+                raise ValueError("Cloudinary is not configured. Please use URL-based images or configure Cloudinary credentials in .env file.")
             self.delete_banner()
             image_data = uploader.upload(image, public_id=f"{uuid.uuid4().hex}_{image.filename.rsplit('.')[0]}")
             url = f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}/image/upload/f_auto,q_auto/{image_data.get('public_id')}"
@@ -80,12 +83,12 @@ class Subthread(db.Model):
             self.banner_url = url
 
     def delete_logo(self):
-        if self.logo and self.logo.startswith(f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}"):
+        if app.config.get("CLOUDINARY_ENABLED") and self.logo and app.config.get("CLOUDINARY_NAME") and self.logo.startswith(f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}"):
             res = uploader.destroy(self.logo.split("/")[-1])
             print(f"Cloudinary Image Destroy Response for {self.name}: ", res)
 
     def delete_banner(self):
-        if self.banner_url and self.banner_url.startswith(f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}"):
+        if app.config.get("CLOUDINARY_ENABLED") and self.banner_url and app.config.get("CLOUDINARY_NAME") and self.banner_url.startswith(f"https://res.cloudinary.com/{app.config['CLOUDINARY_NAME']}"):
             res = uploader.destroy(self.banner_url.split("/")[-1])
             print(f"Cloudinary Banner Destroy Response for {self.name}: ", res)
 
@@ -118,7 +121,6 @@ class Subthread(db.Model):
         return data
 
     def as_dict_minimal(self):
-        """Returns minimal info for listing (name, logo, title)"""
         return {
             "id": self.id,
             "name": self.name,
@@ -126,14 +128,10 @@ class Subthread(db.Model):
             "logo": self.logo,
         }
 
-    def __init__(self, name, created_by, title=None, description=None, rules=None, logo=None, banner_url=None):
-        self.name = name
-        self.title = title or ""
-        self.description = description or ""
-        self.rules = rules
-        self.logo = logo
-        self.banner_url = banner_url
-        self.created_by = created_by
+    def __init__(self, **kwargs):
+        # Allow SQLAlchemy to handle initialization properly
+        # This ensures compatibility with SQLAlchemy's model creation
+        super().__init__(**kwargs)
 
 
 class Subscription(db.Model):
@@ -181,7 +179,6 @@ def validate_subthread_name(name):
     if not name:
         raise ValidationError("Subthread name is required")
     
-    # Remove t/ prefix if present for validation
     clean_name = name.replace("t/", "").lower()
     
     if len(clean_name) < 3:
@@ -189,11 +186,9 @@ def validate_subthread_name(name):
     if len(clean_name) > 21:
         raise ValidationError("Subthread name must be at most 21 characters long")
     
-    # Check if name contains only lowercase letters, numbers, and hyphens
     if not re.match(r"^[a-z0-9-]+$", clean_name):
         raise ValidationError("Subthread name can only contain lowercase letters, numbers, and hyphens")
     
-    # Check if name already exists (case-insensitive)
     existing = Subthread.query.filter(func.lower(Subthread.name) == func.lower(f"t/{clean_name}")).first()
     if existing:
         raise ValidationError("Subthread name already exists")

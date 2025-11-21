@@ -19,9 +19,7 @@ app = Flask(
     static_url_path="/",
 )
 
-# Configure CORS with credentials support
-# IMPORTANT: Include BOTH localhost and 127.0.0.1 for all ports
-# Chrome treats localhost and 127.0.0.1 as different origins!
+
 CORS(
     app,
     supports_credentials=True,
@@ -35,23 +33,28 @@ CORS(
     ],
 )
 
-cloudinary.config(
-    cloud_name=CLOUDINARY_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET,
-)
-app.config["CLOUDINARY_NAME"] = CLOUDINARY_NAME
+# Only configure Cloudinary if credentials are provided
+if CLOUDINARY_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+    )
+    app.config["CLOUDINARY_NAME"] = CLOUDINARY_NAME
+    app.config["CLOUDINARY_ENABLED"] = True
+else:
+    app.config["CLOUDINARY_NAME"] = None
+    app.config["CLOUDINARY_ENABLED"] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config["SECRET_KEY"] = SECRET_KEY
 
-# Configure session cookies for cross-origin requests (development)
-# CRITICAL: Set domain to None to allow cookies on both localhost and 127.0.0.1
+
 app.config["SESSION_COOKIE_SAMESITE"] = "None"
-app.config["SESSION_COOKIE_SECURE"] = False  # Set to True in production with HTTPS
+app.config["SESSION_COOKIE_SECURE"] = False 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_NAME"] = "session"  # Explicit cookie name
-app.config["SESSION_COOKIE_DOMAIN"] = None  # Allow cookies on both localhost and 127.0.0.1
-app.config["PERMANENT_SESSION_LIFETIME"] = 86400  # 24 hours
+app.config["SESSION_COOKIE_NAME"] = "session"  
+app.config["SESSION_COOKIE_DOMAIN"] = None  
+app.config["PERMANENT_SESSION_LIFETIME"] = 86400  
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -79,7 +82,6 @@ def not_found(e):
     return app.send_static_file("index.html")
 
 
-# noqa
 from threaddit.users.routes import user
 from threaddit.subthreads.routes import threads
 from threaddit.posts.routes import posts
