@@ -327,3 +327,26 @@ CREATE TABLE IF NOT EXISTS public.reports (
 );
 
 CREATE INDEX IF NOT EXISTS idx_reports_post_id ON public.reports(post_id);
+
+
+---------------------------------------------------------
+-- DELETION HISTORY (Moderation Audit Log)
+---------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.deletion_history (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL,
+    deleted_by INTEGER NOT NULL REFERENCES public.users(id) ON DELETE SET NULL,
+    reason TEXT,
+    original_title TEXT,
+    original_content TEXT,
+    original_media TEXT,
+    original_author_id INTEGER,
+    original_author_username TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    report_id INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_deletion_history_deleted_at ON public.deletion_history(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_deletion_history_post_id ON public.deletion_history(post_id);
