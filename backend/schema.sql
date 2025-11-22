@@ -310,3 +310,20 @@ VALUES
     ('Thread Moderator', 'mod'),
     ('Administrator', 'admin')
 ON CONFLICT DO NOTHING;
+
+
+---------------------------------------------------------
+-- REPORTS (Post Reporting System)
+---------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.reports (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    reporter_id INTEGER NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    reason TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_reports_post_id ON public.reports(post_id);
