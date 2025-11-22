@@ -90,6 +90,7 @@ from threaddit.reactions.routes import reactions
 from threaddit.messages.routes import messages
 from threaddit.auth.routes import auth
 from threaddit.reports.routes import reports
+from threaddit.moderation.routes import moderation
 
 app.register_blueprint(user)
 app.register_blueprint(threads)
@@ -99,3 +100,4 @@ app.register_blueprint(reactions)
 app.register_blueprint(messages)
 app.register_blueprint(auth)
 app.register_blueprint(reports)
+app.register_blueprint(moderation)

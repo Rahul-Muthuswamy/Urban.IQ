@@ -163,12 +163,20 @@ def resolve_report(report_id):
         if report.status == "resolved":
             return jsonify({"message": "Report is already resolved"}), 400
         
+        # Check if keep_post is explicitly set (defaults to True)
+        keep_post = True
+        if request.json and "keep_post" in request.json:
+            keep_post = request.json.get("keep_post", True)
+        
         # Mark as resolved
         report.mark_resolved()
         
         # Serialize and return updated report
         report_schema = ReportSchema()
-        return jsonify(report_schema.dump(report)), 200
+        result = report_schema.dump(report)
+        result["keep_post"] = keep_post
+        
+        return jsonify(result), 200
         
     except Exception as e:
         return jsonify({"message": f"Error resolving report: {str(e)}"}), 500
