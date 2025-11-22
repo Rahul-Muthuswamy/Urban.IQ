@@ -350,3 +350,22 @@ CREATE TABLE IF NOT EXISTS public.deletion_history (
 
 CREATE INDEX IF NOT EXISTS idx_deletion_history_deleted_at ON public.deletion_history(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_deletion_history_post_id ON public.deletion_history(post_id);
+
+---------------------------------------------------------
+-- CHAT HISTORY (AI Assistant Chat History)
+---------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.chat_history (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES public.users(id) ON DELETE SET NULL,
+    ip_address VARCHAR(45), -- IPv6 max length
+    query TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    sources JSONB, -- Store sources as JSON
+    is_political BOOLEAN DEFAULT FALSE,
+    response_time_ms FLOAT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_history_user_id ON public.chat_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_history_created_at ON public.chat_history(created_at);
