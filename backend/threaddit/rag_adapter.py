@@ -111,3 +111,5 @@ def rag_query(query: str, k: int = 5, user_id: Optional[int] = None) -> Dict[str
         logger.error(f"Unexpected error in RAG adapter: {str(e)}")
         raise RAGServiceError(f"Unexpected error: {str(e)}")
 
+
+
