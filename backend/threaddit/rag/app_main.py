@@ -1,4 +1,3 @@
-# app_main.py
 import logging
 import time
 from fastapi import FastAPI, HTTPException, Request
@@ -7,7 +6,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
 from rag_retriever import ask_rag
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -17,16 +15,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure as needed
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Request logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -66,7 +62,6 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 @app.get("/ping")
 def ping():
-    """Health check endpoint"""
     return {
         "status": "running",
         "timestamp": time.time(),
@@ -75,16 +70,14 @@ def ping():
 
 @app.get("/health")
 def health():
-    """Detailed health check"""
     try:
-        # You can add more health checks here (DB connectivity, etc.)
         return {
             "status": "healthy",
             "timestamp": time.time(),
             "checks": {
                 "api": "ok",
-                "database": "ok",  # Add actual DB check if needed
-                "openai": "ok"     # Add actual OpenAI check if needed
+                "database": "ok",  
+                "openai": "ok"    
             }
         }
     except Exception as e:
@@ -93,13 +86,11 @@ def health():
 
 @app.post("/rag")
 def rag_endpoint(body: QueryIn):
-    """Main RAG endpoint for processing queries"""
     try:
         logger.info(f"Received query: {body.query[:100]}... (k={body.k})")
         
         result = ask_rag(body.query, body.k)
         
-        # Add request metadata
         result["request_info"] = {
             "query_length": len(body.query),
             "k_requested": body.k,
@@ -117,7 +108,6 @@ def rag_endpoint(body: QueryIn):
 
 @app.get("/")
 def root():
-    """Root endpoint with API information"""
     return {
         "message": "Election RAG API",
         "version": "1.0.0",

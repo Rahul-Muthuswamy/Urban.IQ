@@ -4,10 +4,6 @@ from threaddit.reports.models import Report
 
 
 class ReportCreateSchema(ma.SQLAlchemySchema):
-    """
-    Schema for creating a new report.
-    Validates post_id and reason fields.
-    """
     class Meta:
         model = Report
     
@@ -16,21 +12,14 @@ class ReportCreateSchema(ma.SQLAlchemySchema):
 
 
 class ReporterSchema(ma.SQLAlchemySchema):
-    """
-    Nested schema for reporter information in ReportSchema.
-    """
     class Meta:
-        model = None  # Not bound to a specific model, just for structure
+        model = None 
     
     id = fields.Int(dump_only=True)
     username = fields.Str(dump_only=True)
 
 
 class ReportSchema(ma.SQLAlchemySchema):
-    """
-    Schema for serializing report data.
-    Includes nested reporter information.
-    """
     class Meta:
         model = Report
     

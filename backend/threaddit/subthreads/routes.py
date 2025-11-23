@@ -185,7 +185,6 @@ def create_subthread():
             error_message = str(error_messages)
         return jsonify({"message": error_message}), 400
     except ValueError as e:
-        # Handle Cloudinary configuration errors
         return jsonify({"message": str(e)}), 400
     except Exception as e:
         return jsonify({"message": f"Error creating community: {str(e)}"}), 500
@@ -223,7 +222,6 @@ def update_thread(tid):
     banner_image = request.files.get("banner")
     form_data = request.form.to_dict()
     
-    # Handle legacy format
     if request.files.get("media") and not logo_image:
         form_data["logo_content_type"] = "image"
         form_data["logo_url"] = form_data.get("content_url")

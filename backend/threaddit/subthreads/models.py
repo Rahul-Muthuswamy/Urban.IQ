@@ -175,7 +175,6 @@ class SubthreadInfo(db.Model):
 
 
 def validate_subthread_name(name):
-    """Validates subthread name: lowercase, alphanumeric + '-' only, min 3 chars, max 21 chars"""
     if not name:
         raise ValidationError("Subthread name is required")
     

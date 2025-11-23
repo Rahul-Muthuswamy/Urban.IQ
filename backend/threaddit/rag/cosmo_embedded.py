@@ -7,10 +7,8 @@ import re
 
 load_dotenv()
 
-# -----------------------------
-# Cosmos DB (Mongo API) client
-# -----------------------------
-COSMOS_URI = os.getenv("COSMOS_MONGO_URI")      # from Connection Strings
+
+COSMOS_URI = os.getenv("COSMOS_MONGO_URI")     
 DB_NAME = "ragdb"
 COLLECTION_NAME = "election_docs"
 
@@ -18,9 +16,7 @@ mongo_client = MongoClient(COSMOS_URI)
 db = mongo_client[DB_NAME]
 collection = db[COLLECTION_NAME]
 
-# -----------------------------
-# Azure OpenAI client
-# -----------------------------
+
 openai_client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_KEY"),
     azure_endpoint=os.getenv("AZURE_OPENAI_EMBEDDINGS_ENDPOINT"),
@@ -28,11 +24,7 @@ openai_client = AzureOpenAI(
 )
 
 
-# ----------------------------------------------------------
-# TEXT EXTRACTION LOGIC (Supports ALL your election JSONs)
-# ----------------------------------------------------------
 def extract_text(data):
-    # candidate_list.json
     if isinstance(data, list) and data and "candidates" in data[0]:
         lines = []
         for office in data:
@@ -43,7 +35,6 @@ def extract_text(data):
             )
             lines.append(office_info)
 
-            # Check if office has candidates
             if "candidates" in office and office["candidates"]:
                 for c in office["candidates"]:
                     lines.append(
@@ -54,11 +45,9 @@ def extract_text(data):
 
         return " ".join(lines)
 
-    # faq.json
     if isinstance(data, list) and data and "question" in data[0]:
         return " ".join([f"Q: {q['question']} A: {q['answer']}" for q in data if "question" in q and "answer" in q])
 
-    # impt_data.json
     if isinstance(data, dict) and data.get("type") == "election_dates":
         lines = [
             f"Election: {data['election_name']} on {data['election_date']} "
@@ -73,7 +62,6 @@ def extract_text(data):
             )
         return " ".join(lines)
 
-    # proposal_one.json
     if isinstance(data, dict) and data.get("type") == "ballot_proposal":
         return (
             f"Proposal {data['proposal_number']}: {data['title']} "
@@ -82,11 +70,9 @@ def extract_text(data):
             f"NO means: {data['no_vote_meaning']}"
         )
 
-    # polling_locations_clean.json
     if isinstance(data, list) and data and "site_name" in data[0]:
         lines = []
         for location in data:
-            # Extract location information
             borough = location.get('borough', '').strip()
             site_name = location.get('site_name', '').strip()
             address = location.get('address', '').strip()
@@ -94,7 +80,6 @@ def extract_text(data):
             latitude = location.get('latitude', '').strip()
             longitude = location.get('longitude', '').strip()
             
-            # Build location text with available information
             location_text = f"Polling Location: {site_name}"
             
             if address:
@@ -106,7 +91,6 @@ def extract_text(data):
             if zipcode:
                 location_text += f" | ZIP: {zipcode}"
             
-            # Add coordinates if available
             if latitude and longitude:
                 location_text += f" | Coordinates: {latitude}, {longitude}"
             
@@ -116,16 +100,10 @@ def extract_text(data):
 
     return json.dumps(data)
 
-
-# ----------------------------------------------------------
-# TEXT CHUNKING — Split large texts into smaller chunks
-# ----------------------------------------------------------
 def chunk_text(text, max_length=6000):
-    """Split text into chunks that fit within the embedding model's token limit."""
     if len(text) <= max_length:
         return [text]
     
-    # Try to split on sentences first
     sentences = re.split(r'[.!?]+', text)
     chunks = []
     current_chunk = ""
@@ -135,13 +113,11 @@ def chunk_text(text, max_length=6000):
         if not sentence:
             continue
             
-        # If adding this sentence would exceed the limit, start a new chunk
         if len(current_chunk) + len(sentence) + 1 > max_length:
             if current_chunk:
                 chunks.append(current_chunk.strip())
                 current_chunk = sentence
             else:
-                # If a single sentence is too long, split it by words
                 words = sentence.split()
                 while words:
                     word_chunk = ""
@@ -157,16 +133,11 @@ def chunk_text(text, max_length=6000):
     
     return chunks
 
-
-# ----------------------------------------------------------
-# MAIN FUNCTION — Upload all embeddings into Cosmos DB
-# ----------------------------------------------------------
 def process_and_upload():
-    # Get the directory where this script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
     folder = os.path.join(script_dir, "docs")
 
-    print("\n🚀 Starting embedding upload to CosmosDB...\n")
+    print("\n Starting embedding upload to CosmosDB...\n")
 
     for filename in os.listdir(folder):
         if not filename.endswith(".json"):
@@ -174,7 +145,7 @@ def process_and_upload():
 
         full_path = os.path.join(folder, filename)
 
-        print(f"📄 Reading: {full_path}")
+        print(f" Reading: {full_path}")
 
         with open(full_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -182,14 +153,12 @@ def process_and_upload():
         text = extract_text(data)
 
         if not text.strip():
-            print(f"⚠ Skipped empty: {filename}")
+            print(f" Skipped empty: {filename}")
             continue
 
-        # --- Split text into chunks if needed ---
         text_chunks = chunk_text(text)
         print(f"📝 Split into {len(text_chunks)} chunk(s)")
 
-        # --- Process each chunk ---
         for i, chunk in enumerate(text_chunks):
             print(f"✨ Creating embedding for chunk {i+1}/{len(text_chunks)}...")
             
@@ -198,12 +167,11 @@ def process_and_upload():
                 model=os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
             ).data[0].embedding
 
-            # Create unique doc_id for each chunk
             base_id = filename.replace(".json", "")
             doc_id = f"{base_id}_{i}" if len(text_chunks) > 1 else base_id
 
             document = {
-                "id": doc_id,            # IMPORTANT: must match shard key
+                "id": doc_id,           
                 "source": filename,
                 "text": chunk,
                 "embedding": embedding,
@@ -211,7 +179,6 @@ def process_and_upload():
                 "total_chunks": len(text_chunks)
             }
 
-            # --- Upsert into Cosmos ---
             collection.update_one(
                 {"id": doc_id},
                 {"$set": document},
@@ -222,7 +189,7 @@ def process_and_upload():
 
         print()
 
-    print("\n🎉 ALL embeddings uploaded to Cosmos MongoDB successfully!\n")
+    print("\nALL embeddings uploaded to Cosmos MongoDB successfully!\n")
 
 
 if __name__ == "__main__":

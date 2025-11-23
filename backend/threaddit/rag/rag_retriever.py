@@ -1,4 +1,3 @@
-# rag_retriever.py
 import os
 import numpy as np
 import logging
@@ -10,15 +9,11 @@ from functools import lru_cache
 import time
 import hashlib
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-# --------------------------
-# Cosmos Mongo Configuration
-# --------------------------
 COSMOS_URI = os.getenv("COSMOS_MONGO_URI")
 DB_NAME = os.getenv("COSMOS_DB_NAME", "ragdb")
 COLLECTION_NAME = os.getenv("COSMOS_COLLECTION", "election_docs")
@@ -27,16 +22,14 @@ if not COSMOS_URI:
     raise ValueError("COSMOS_MONGO_URI environment variable is required")
 
 try:
-    # Configure MongoDB client with optimized settings for Cosmos DB
     mongo_client = MongoClient(
         COSMOS_URI, 
         serverSelectionTimeoutMS=10000,
         connectTimeoutMS=10000,
         socketTimeoutMS=30000,
         maxPoolSize=10,
-        retryWrites=False  # Cosmos DB doesn't support retryable writes
+        retryWrites=False  
     )
-    # Test connection
     mongo_client.admin.command('ismaster')
     db = mongo_client[DB_NAME]
     collection = db[COLLECTION_NAME]
@@ -45,11 +38,6 @@ except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {e}")
     raise
 
-# --------------------------
-# Azure OpenAI Clients
-# --------------------------
-
-# Validate required environment variables
 required_vars = [
     "AZURE_OPENAI_EMBEDDINGS_API_KEY",
     "AZURE_OPENAI_EMBEDDINGS_ENDPOINT", 
@@ -63,7 +51,6 @@ for var in required_vars:
     if not os.getenv(var):
         raise ValueError(f"{var} environment variable is required")
 
-# Embeddings client
 try:
     embedding_client = AzureOpenAI(
         api_key=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_KEY"),
@@ -76,7 +63,6 @@ except Exception as e:
     logger.error(f"Failed to initialize embedding client: {e}")
     raise
 
-# Chat completion client
 try:
     chat_client = AzureOpenAI(
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
@@ -89,21 +75,13 @@ except Exception as e:
     logger.error(f"Failed to initialize chat client: {e}")
     raise
 
-
-# --------------------------
-# Helper Functions
-# --------------------------
-
-# Simple in-memory cache for recent queries
 _query_cache = {}
-_cache_max_age = 300  # 5 minutes cache
+_cache_max_age = 300 
 
 def _get_query_cache_key(query: str, k: int) -> str:
-    """Generate cache key for query."""
     return hashlib.md5(f"{query.strip().lower()}_{k}".encode()).hexdigest()
 
 def _get_cached_result(query: str, k: int) -> Optional[List[Dict[str, Any]]]:
-    """Get cached result if available and not expired."""
     cache_key = _get_query_cache_key(query, k)
     if cache_key in _query_cache:
         cached_data, timestamp = _query_cache[cache_key]
@@ -111,31 +89,24 @@ def _get_cached_result(query: str, k: int) -> Optional[List[Dict[str, Any]]]:
             logger.info("Returning cached result")
             return cached_data
         else:
-            # Remove expired cache
             del _query_cache[cache_key]
     return None
 
 def _cache_result(query: str, k: int, result: List[Dict[str, Any]]) -> None:
-    """Cache the result for future use."""
     cache_key = _get_query_cache_key(query, k)
     _query_cache[cache_key] = (result, time.time())
     
-    # Simple cache cleanup - keep only latest 20 entries
     if len(_query_cache) > 20:
         oldest_key = min(_query_cache.keys(), key=lambda k: _query_cache[k][1])
         del _query_cache[oldest_key]
 
 def check_database_status() -> Dict[str, Any]:
-    """Check database connection and document count."""
     try:
-        # Test connection
         mongo_client.admin.command('ismaster')
         
-        # Count documents
         total_docs = collection.count_documents({})
         docs_with_embeddings = collection.count_documents({"embedding": {"$exists": True}})
         
-        # Sample a document to check embedding format
         sample_doc = collection.find_one({"embedding": {"$exists": True}})
         embedding_dimension = len(sample_doc["embedding"]) if sample_doc and "embedding" in sample_doc else 0
         
@@ -159,7 +130,6 @@ def check_database_status() -> Dict[str, Any]:
 
 @lru_cache(maxsize=1000)
 def embed_text(text: str) -> List[float]:
-    """Generate embedding for a query or text chunk with caching."""
     if not text or not text.strip():
         raise ValueError("Text cannot be empty")
     
@@ -178,43 +148,35 @@ def embed_text(text: str) -> List[float]:
 
 
 def cosine_similarity(a: List[float], b: List[float]) -> float:
-    """Compute cosine similarity between two vectors with robust error handling."""
     try:
         if not a or not b or len(a) != len(b):
             return 0.0
         
         a_arr, b_arr = np.array(a, dtype=np.float32), np.array(b, dtype=np.float32)
         
-        # Handle edge cases
         norm_a, norm_b = np.linalg.norm(a_arr), np.linalg.norm(b_arr)
         if norm_a == 0 or norm_b == 0 or np.isnan(norm_a) or np.isnan(norm_b):
             return 0.0
         
         similarity = np.dot(a_arr, b_arr) / (norm_a * norm_b)
         
-        # Handle numerical issues
         if np.isnan(similarity) or np.isinf(similarity):
             return 0.0
         
-        return float(np.clip(similarity, -1.0, 1.0))  # Ensure valid range
+        return float(np.clip(similarity, -1.0, 1.0))  
         
     except Exception as e:
         logger.warning(f"Error computing cosine similarity: {e}")
         return 0.0
 
 
-# --------------------------
-# Top-K Retriever
-# --------------------------
 def retrieve_top_k(query: str, k: int = 3) -> List[Dict[str, Any]]:
-    """Retrieve top-k most relevant chunks from CosmosDB using optimized vector search."""
     if not query or not query.strip():
         raise ValueError("Query cannot be empty")
     
     if k <= 0:
         raise ValueError("k must be positive")
     
-    # Check cache first
     cached_result = _get_cached_result(query, k)
     if cached_result is not None:
         return cached_result
@@ -223,10 +185,8 @@ def retrieve_top_k(query: str, k: int = 3) -> List[Dict[str, Any]]:
         q_emb = embed_text(query)
         logger.info(f"Searching for top-{k} documents for query: {query[:50]}...")
         
-        # Check if vector search is available by testing collection capabilities
         vector_search_available = False
         try:
-            # Test if the database supports vector search
             test_pipeline = [{"$vectorSearch": {"index": "test", "path": "test", "queryVector": [0.1, 0.1], "numCandidates": 1, "limit": 1}}]
             list(collection.aggregate(test_pipeline, allowDiskUse=True))
             vector_search_available = True
@@ -235,7 +195,6 @@ def retrieve_top_k(query: str, k: int = 3) -> List[Dict[str, Any]]:
         
         if vector_search_available:
             try:
-                # MongoDB Atlas Vector Search (if configured)
                 pipeline = [
                     {
                         "$vectorSearch": {
@@ -265,45 +224,36 @@ def retrieve_top_k(query: str, k: int = 3) -> List[Dict[str, Any]]:
             except Exception as ve:
                 logger.warning(f"Vector search failed: {ve}")
         
-        # Fallback to optimized manual cosine similarity with timeout handling
         try:
             results = _manual_similarity_search(q_emb, k, query)
-            # Cache successful results
             if results:
                 _cache_result(query, k, results)
             return results
         except Exception as manual_error:
             logger.error(f"Manual similarity search also failed: {manual_error}")
-            # Return empty results to prevent complete failure
             return []
         
     except Exception as e:
         logger.error(f"Error in retrieve_top_k: {e}")
-        # Return empty results instead of raising to prevent complete failure
         return []
 
 
 def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Dict[str, Any]]:
-    """Optimized manual similarity search with chunked processing and timeout handling."""
     logger.info("Using manual similarity calculation for document retrieval")
     
     try:
-        # Use smaller batch size and limit total documents for better performance
-        batch_size = 150  # Even smaller batches for Cosmos DB
-        max_docs = 1500   # Conservative limit to prevent timeouts
+        batch_size = 150  
+        max_docs = 1500   
         all_scored = []
         processed_count = 0
         
-        # Try to use text-based pre-filtering if possible
         query_words = set(query.lower().split())
         filter_query = {"embedding": {"$exists": True}}
         
-        # Add simple text filtering if query contains specific keywords
         voting_keywords = ["vote", "voting", "ballot", "election", "poll"]
         id_keywords = ["id", "identification", "proof", "document", "license"]
         
         if any(word in query.lower() for word in voting_keywords):
-            # Prioritize voting-related documents
             cursor1 = collection.find(
                 {"embedding": {"$exists": True}, "text": {"$regex": "vote|voting|ballot|poll", "$options": "i"}},
                 {"id": 1, "source": 1, "text": 1, "chunk_index": 1, "total_chunks": 1, "embedding": 1}
@@ -314,10 +264,8 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
                 {"id": 1, "source": 1, "text": 1, "chunk_index": 1, "total_chunks": 1, "embedding": 1}
             ).limit(max_docs // 2).batch_size(batch_size)
             
-            # Combine cursors - process voting docs first
             all_cursors = [cursor1, cursor2]
         elif any(word in query.lower() for word in id_keywords):
-            # Prioritize ID-related documents
             cursor1 = collection.find(
                 {"embedding": {"$exists": True}, "text": {"$regex": "id|identification|proof|document|license", "$options": "i"}},
                 {"id": 1, "source": 1, "text": 1, "chunk_index": 1, "total_chunks": 1, "embedding": 1}
@@ -330,30 +278,26 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
             
             all_cursors = [cursor1, cursor2]
         else:
-            # Default: random sampling
             all_cursors = [collection.find(
                 filter_query,
                 {"id": 1, "source": 1, "text": 1, "chunk_index": 1, "total_chunks": 1, "embedding": 1}
             ).limit(max_docs).batch_size(batch_size)]
         
-        # Process documents from all cursors
         docs_batch = []
         for cursor in all_cursors:
             try:
                 for doc in cursor:
                     docs_batch.append(doc)
                     
-                    # Process when batch is ready
                     if len(docs_batch) >= batch_size:
                         try:
                             batch_scores = _process_document_batch(docs_batch, q_emb)
                             all_scored.extend(batch_scores)
                             processed_count += len(docs_batch)
                             
-                            # Keep only top candidates
                             if len(all_scored) > k * 10:
                                 all_scored.sort(key=lambda x: x["score"], reverse=True)
-                                all_scored = all_scored[:k * 5]  # Keep fewer candidates
+                                all_scored = all_scored[:k * 5]  
                             
                             docs_batch = []
                             
@@ -362,10 +306,9 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
                                 
                         except Exception as e:
                             logger.warning(f"Error processing batch: {e}")
-                            docs_batch = []  # Skip problematic batch
+                            docs_batch = []  
                             continue
                             
-                    # Break if we've processed enough
                     if processed_count >= max_docs:
                         break
                         
@@ -376,7 +319,6 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
             if processed_count >= max_docs:
                 break
         
-        # Process remaining documents
         if docs_batch:
             try:
                 batch_scores = _process_document_batch(docs_batch, q_emb)
@@ -389,7 +331,6 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
             logger.warning("No documents processed successfully")
             return []
         
-        # Final sorting and selection
         all_scored.sort(key=lambda x: x["score"], reverse=True)
         results = all_scored[:k]
         
@@ -398,12 +339,10 @@ def _manual_similarity_search(q_emb: List[float], k: int, query: str) -> List[Di
         
     except Exception as e:
         logger.error(f"Error in manual similarity search: {e}")
-        # Return empty results rather than crashing
         return []
 
 
 def _process_document_batch(batch: List[Dict], q_emb: List[float]) -> List[Dict[str, Any]]:
-    """Process a batch of documents for similarity calculation."""
     scored = []
     
     for doc in batch:
@@ -424,9 +363,6 @@ def _process_document_batch(batch: List[Dict], q_emb: List[float]) -> List[Dict[
     return scored
 
 
-# --------------------------
-# Build Prompt Context
-# --------------------------
 def build_context(chunks: List[Dict[str, Any]]) -> str:
     parts = []
     for c in chunks:
@@ -435,11 +371,7 @@ def build_context(chunks: List[Dict[str, Any]]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
-# --------------------------
-# Main RAG function
-# --------------------------
 def ask_rag(query: str, k: int = 3) -> Dict[str, Any]:
-    """Main RAG function with comprehensive error handling."""
     if not query or not query.strip():
         raise ValueError("Query cannot be empty")
     

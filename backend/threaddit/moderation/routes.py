@@ -19,44 +19,22 @@ moderation = Blueprint("moderation", __name__, url_prefix="/api/mod")
 @login_required
 @auth_role(["admin", "mod"])
 def delete_post(post_id):
-    """
-    Delete a post and log deletion in audit history.
-    
-    Requires authentication and moderator/admin role.
-    
-    Query Parameters:
-        report_id: Optional report ID that triggered this deletion
-    
-    Request Body (optional):
-        reason: Optional moderator note/reason for deletion
-    
-    Returns:
-        200: Post deleted successfully with deletion log ID
-        404: Post not found
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
-        # Get post
         post = Posts.query.get(post_id)
         if not post:
             return jsonify({"message": "Post not found"}), 404
         
-        # Get optional report_id from query params
         report_id = request.args.get("report_id", type=int)
         
-        # Get optional reason from request body
         reason = None
         if request.json:
             reason = request.json.get("reason")
         
-        # Get post author info
         original_author_id = post.user_id
         original_author_username = None
         if post.user:
             original_author_username = post.user.username
         
-        # Create deletion history record BEFORE deleting post
         deletion_history = DeletionHistory(
             post_id=post_id,
             deleted_by=current_user.id,
@@ -70,12 +48,10 @@ def delete_post(post_id):
             report_id=report_id
         )
         
-        # Use transaction to ensure atomicity
         try:
             db.session.add(deletion_history)
-            db.session.flush()  # Get the deletion_history.id
+            db.session.flush()  
             
-            # Delete the post (this will cascade delete reports)
             db.session.delete(post)
             db.session.commit()
             
@@ -97,26 +73,13 @@ def delete_post(post_id):
 @login_required
 @auth_role(["admin", "mod"])
 def analytics_summary():
-    """
-    Get moderation analytics summary.
-    
-    Requires authentication and moderator/admin role.
-    
-    Returns:
-        200: Analytics summary with counts and trends
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
-        # Total reports
         total_reports = Report.query.count()
         pending_reports = Report.query.filter_by(status="pending").count()
         resolved_reports = Report.query.filter_by(status="resolved").count()
         
-        # Total deletions
         total_deletions = DeletionHistory.query.count()
         
-        # Deletions last 7 days
         seven_days_ago = datetime.now() - timedelta(days=7)
         deletions_last_7_days = db.session.query(
             cast(DeletionHistory.deleted_at, Date).label("date"),
@@ -132,7 +95,6 @@ def analytics_summary():
             for row in deletions_last_7_days
         ]
         
-        # Reports last 7 days
         reports_last_7_days = db.session.query(
             cast(Report.created_at, Date).label("date"),
             func.count(Report.id).label("count")
@@ -164,23 +126,9 @@ def analytics_summary():
 @login_required
 @auth_role(["admin", "mod"])
 def top_reported_posts():
-    """
-    Get top reported posts.
-    
-    Requires authentication and moderator/admin role.
-    
-    Query Parameters:
-        limit: Number of results (default: 10)
-    
-    Returns:
-        200: List of top reported posts
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
         limit = request.args.get("limit", default=10, type=int)
         
-        # Get top reported posts
         top_reported = db.session.query(
             Report.post_id,
             func.count(Report.id).label("report_count")
@@ -190,7 +138,6 @@ def top_reported_posts():
             func.count(Report.id).desc()
         ).limit(limit).all()
         
-        # Get post titles from PostInfo view or Posts table
         result = []
         for row in top_reported:
             post_info = PostInfo.query.filter_by(post_id=row.post_id).first()
@@ -201,7 +148,6 @@ def top_reported_posts():
                     "report_count": row.report_count
                 })
             else:
-                # Fallback to Posts table if PostInfo doesn't exist
                 post = Posts.query.get(row.post_id)
                 if post:
                     result.append({
@@ -220,23 +166,9 @@ def top_reported_posts():
 @login_required
 @auth_role(["admin", "mod"])
 def top_reporters():
-    """
-    Get top reporters (users who report most).
-    
-    Requires authentication and moderator/admin role.
-    
-    Query Parameters:
-        limit: Number of results (default: 10)
-    
-    Returns:
-        200: List of top reporters
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
         limit = request.args.get("limit", default=10, type=int)
         
-        # Get top reporters
         top_reporters = db.session.query(
             Report.reporter_id,
             func.count(Report.id).label("reports_count")
@@ -266,24 +198,6 @@ def top_reporters():
 @login_required
 @auth_role(["admin", "mod"])
 def get_deletions():
-    """
-    Get paginated deletion history with filters.
-    
-    Requires authentication and moderator/admin role.
-    
-    Query Parameters:
-        page: Page number (default: 1)
-        per_page: Items per page (default: 20)
-        from_date: Filter deletions from this date (ISO format)
-        to_date: Filter deletions to this date (ISO format)
-        reporter_id: Filter by reporter ID (if report_id exists)
-        author_id: Filter by original author ID
-    
-    Returns:
-        200: Paginated deletion history
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
         page = request.args.get("page", default=1, type=int)
         per_page = request.args.get("per_page", default=20, type=int)
@@ -292,10 +206,8 @@ def get_deletions():
         reporter_id = request.args.get("reporter_id", type=int)
         author_id = request.args.get("author_id", type=int)
         
-        # Build query
         query = DeletionHistory.query
         
-        # Apply filters
         if from_date:
             try:
                 from_dt = datetime.fromisoformat(from_date.replace('Z', '+00:00'))
@@ -314,24 +226,18 @@ def get_deletions():
             query = query.filter(DeletionHistory.original_author_id == author_id)
         
         if reporter_id:
-            # Filter by reporter_id through report_id
-            # Join with reports table to filter by reporter_id
-            # Only include deletions that have a report_id and match the reporter
             query = query.filter(DeletionHistory.report_id.isnot(None))
             query = query.join(Report, DeletionHistory.report_id == Report.id)
             query = query.filter(Report.reporter_id == reporter_id)
         
-        # Order by deleted_at DESC
         query = query.order_by(DeletionHistory.deleted_at.desc())
         
-        # Paginate
         paginated = query.paginate(
             page=page,
             per_page=per_page,
             error_out=False
         )
         
-        # Serialize
         deletions_data = [dh.to_dict() for dh in paginated.items]
         
         return jsonify({
@@ -350,21 +256,6 @@ def get_deletions():
 @login_required
 @auth_role(["admin", "mod"])
 def get_reports_with_details():
-    """
-    Get reports with additional post and author details.
-    
-    Requires authentication and moderator/admin role.
-    
-    Query Parameters:
-        page: Page number (default: 1)
-        per_page: Items per page (default: 20)
-        status: Filter by status ('pending' or 'resolved', default: 'pending')
-    
-    Returns:
-        200: Paginated reports with post details
-        401: Unauthorized (not mod/admin)
-        500: Server error
-    """
     try:
         from threaddit.reports.schemas import ReportSchema
         
@@ -372,17 +263,14 @@ def get_reports_with_details():
         per_page = request.args.get("per_page", default=20, type=int)
         status = request.args.get("status", default="pending", type=str)
         
-        # Query reports
         reports_query = Report.query.filter_by(status=status).order_by(Report.created_at.desc())
         
-        # Paginate
         paginated_reports = reports_query.paginate(
             page=page,
             per_page=per_page,
             error_out=False
         )
         
-        # Serialize with additional details
         reports_data = []
         for report in paginated_reports.items:
             report_dict = {
@@ -398,7 +286,6 @@ def get_reports_with_details():
                 "updated_at": report.updated_at.isoformat() if report.updated_at else None,
             }
             
-            # Add post details if available
             post_info = PostInfo.query.filter_by(post_id=report.post_id).first()
             if post_info:
                 report_dict["post"] = {
@@ -406,7 +293,6 @@ def get_reports_with_details():
                     "author_username": post_info.user_name,
                 }
             else:
-                # Fallback to Posts table
                 post = Posts.query.get(report.post_id)
                 if post and post.user:
                     report_dict["post"] = {

@@ -7,7 +7,6 @@ from threaddit.comments.utils import create_comment_tree
 
 comments = Blueprint("comments", __name__, url_prefix="/api")
 
-
 @comments.route("/comments/post/<pid>", methods=["GET"])
 def get_comments(pid):
     comments = (

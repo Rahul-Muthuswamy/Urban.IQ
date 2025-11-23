@@ -7,7 +7,6 @@ from flask_login import login_required, current_user
 
 messages = Blueprint("messages", __name__, url_prefix="/api")
 
-
 @messages.route("/messages", methods=["POST"])
 def new_message():
     if form_data := request.json:
