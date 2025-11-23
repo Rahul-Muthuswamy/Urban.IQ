@@ -1,0 +1,6 @@
+# Environment variables and sensitive configuration
+.env
+config.js
+
+# Note: config.js contains API keys and should not be committed to version control
+# Consider using a config.example.js template instead
