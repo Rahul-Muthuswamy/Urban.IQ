@@ -1,0 +1,204 @@
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
+import api from "../../api.js";
+import VoteButtons from "../../components/VoteButtons.jsx";
+
+export default function ActionsBar({ post }) {
+  const queryClient = useQueryClient();
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
+  const postInfo = post.post_info || {};
+  const currentUser = post.current_user || {};
+
+  // Save/Unsave mutation
+  const { mutate: toggleSave } = useMutation({
+    mutationFn: async (shouldSave) => {
+      if (shouldSave) {
+        await api.put(`/api/posts/saved/${postInfo.id}`);
+      } else {
+        await api.delete(`/api/posts/saved/${postInfo.id}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+    },
+  });
+
+  const handleShare = async () => {
+    const postUrl = `${window.location.origin}/posts/${postInfo.id}`;
+
+    // Try Web Share API first
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: postInfo.title,
+          text: postInfo.content?.substring(0, 200) || "",
+          url: postUrl,
+        });
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+        return;
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Share failed:", error);
+        }
+      }
+    }
+
+    // Fallback to copy to clipboard
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+      // Fallback: select text
+      const textArea = document.createElement("textarea");
+      textArea.value = postUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    }
+    setShowShareMenu(false);
+  };
+
+  const handleSave = () => {
+    toggleSave(!currentUser.saved);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass rounded-2xl p-4 md:p-6 shadow-glass-lg"
+    >
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        {/* Left: Vote Buttons */}
+        <div className="flex items-center space-x-4">
+          <VoteButtons
+            postId={postInfo.id}
+            initialVote={currentUser.has_upvoted}
+            initialKarma={postInfo.post_karma || 0}
+          />
+        </div>
+
+        {/* Right: Action Buttons */}
+        <div className="flex items-center space-x-3">
+          {/* Save Button */}
+          <motion.button
+            onClick={handleSave}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+              currentUser.saved
+                ? "bg-primary/20 text-primary"
+                : "glass text-gray-600 hover:bg-white/40"
+            }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label={currentUser.saved ? "Unsave post" : "Save post"}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={currentUser.saved ? "M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" : "M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"}
+                fill={currentUser.saved ? "currentColor" : "none"}
+              />
+            </svg>
+            <span className="text-sm font-medium hidden sm:inline">
+              {currentUser.saved ? "Saved" : "Save"}
+            </span>
+          </motion.button>
+
+          {/* Share Button */}
+          <div className="relative">
+            <motion.button
+              onClick={() => setShowShareMenu(!showShareMenu)}
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl glass text-gray-600 hover:bg-white/40 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Share post"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                />
+              </svg>
+              <span className="text-sm font-medium hidden sm:inline">Share</span>
+            </motion.button>
+
+            <AnimatePresence>
+              {showShareMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute right-0 mt-2 w-48 glass rounded-xl shadow-glass-lg overflow-hidden z-50"
+                >
+                  <button
+                    onClick={handleShare}
+                    className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/30 transition-colors text-left"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-gray-700 font-medium">Copy Link</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* More Menu Button */}
+          <motion.button
+            className="p-2 rounded-xl glass text-gray-600 hover:bg-white/40 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="More options"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Share Success Toast */}
+      <AnimatePresence>
+        {shareSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="fixed top-24 right-4 z-50 glass rounded-xl px-4 py-3 shadow-glass-lg border border-green-200 bg-green-50"
+          >
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-green-700 font-medium">Link copied!</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+

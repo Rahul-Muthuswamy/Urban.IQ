@@ -1,0 +1,44 @@
+{
+  "name": "Urban.IQ",
+  "short_name": "Urban.IQ",
+  "description": "Your City, Reimagined - A civic engagement platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#84cc16",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/3_remove_bg.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/3_remove_bg.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["social", "civic", "community"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "Go to home feed",
+      "url": "/home",
+      "icons": [{ "src": "/assets/3_remove_bg.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Open AI Assistant",
+      "url": "/chat",
+      "icons": [{ "src": "/assets/3_remove_bg.png", "sizes": "192x192" }]
+    }
+  ]
+}
+
+
