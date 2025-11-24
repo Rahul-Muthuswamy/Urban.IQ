@@ -125,60 +125,17 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="hidden md:flex fixed top-4 left-4 right-4 z-50 items-center justify-between gap-3"
       >
-        {/* Logo Island */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="flex-shrink-0"
-        >
+        {/* Logo - HUGE Icon Only, No Container, No Animations */}
+        <div className="flex-shrink-0">
           <Link to="/home">
-            <motion.div
-              className="glass rounded-2xl px-4 py-3 flex items-center space-x-3 shadow-glass-lg hover:shadow-glass-xl transition-all duration-300 group relative overflow-hidden"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100"
-                transition={{ duration: 0.3 }}
-              />
-              <motion.img
-                src="/assets/3_remove_bg.png"
-                alt="Urban.IQ Logo"
-                className="w-8 h-8 object-contain relative z-10"
-                whileHover={{ 
-                  scale: 1.2, 
-                  rotate: [0, -10, 10, -10, 0],
-                  transition: { duration: 0.5 }
-                }}
-                animate={{
-                  y: [0, -3, 0],
-                }}
-                transition={{
-                  y: {
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  },
-                }}
-              />
-              <motion.span
-                className="text-lg font-bold text-gradient relative z-10"
-                whileHover={{ scale: 1.1 }}
-                animate={{
-                  backgroundPosition: ["0%", "100%", "0%"],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              >
-                rban.IQ
-              </motion.span>
-            </motion.div>
+            <img
+              src="/assets/3_remove_bg.png"
+              alt="Urban.IQ Logo"
+              aria-label="UrbanIQ logo"
+              className="w-64 h-64 sm:w-72 sm:h-72 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem] 2xl:w-[36rem] 2xl:h-[36rem] object-contain"
+            />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Navigation Items as Individual Islands - Centered */}
         <div className="flex items-center gap-3 flex-1 justify-center">
@@ -625,14 +582,14 @@ export default function Navbar() {
         className="md:hidden fixed top-0 left-0 right-0 z-50 glass backdrop-blur-xl border-b border-white/20"
       >
         <div className="px-4 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/home" className="flex items-center space-x-2">
+          {/* Logo - HUGE Icon Only, No Container, No Animations */}
+          <Link to="/home" className="flex items-center">
             <img
               src="/assets/3_remove_bg.png"
               alt="Urban.IQ Logo"
-              className="w-8 h-8 object-contain"
+              aria-label="UrbanIQ logo"
+              className="w-48 h-48 object-contain"
             />
-            <span className="text-lg font-bold text-gradient">rban.IQ</span>
           </Link>
 
           {/* Hamburger Menu Button */}
