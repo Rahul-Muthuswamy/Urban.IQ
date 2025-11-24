@@ -136,8 +136,8 @@ export default function Signin() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden">
-      {/* Left Animated Panel - Hidden on mobile, 35% tablet, 50% desktop */}
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden overscroll-none" style={{ WebkitOverflowScrolling: "touch" }}>
+      {/* Left Animated Panel - Top on mobile, Left on desktop */}
       <AnimatedLeftPanel
         slides={carouselSlides}
         currentSlide={currentSlide}
@@ -149,7 +149,13 @@ export default function Signin() {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="flex-1 md:w-[65%] lg:w-1/2 flex items-center justify-center bg-gradient-to-b from-white via-primary/5 to-accent/10 relative overflow-hidden min-h-screen py-6 md:py-8 lg:py-12"
+        className="flex-1 md:w-[65%] lg:w-1/2 flex items-center justify-center bg-gradient-to-b from-white via-primary/5 to-accent/10 relative overflow-hidden min-h-[calc(100vh-200px)] md:min-h-screen py-4 px-4 sm:py-6 sm:px-6 md:py-8 lg:py-12 safe-area-inset"
+        style={{
+          paddingTop: "max(1rem, env(safe-area-inset-top))",
+          paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+          paddingLeft: "max(1rem, env(safe-area-inset-left))",
+          paddingRight: "max(1rem, env(safe-area-inset-right))",
+        }}
       >
         <SigninForm
           formData={formData}

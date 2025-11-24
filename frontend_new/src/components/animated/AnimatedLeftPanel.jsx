@@ -20,7 +20,7 @@ export default function AnimatedLeftPanel({ slides, currentSlide, onSlideChange 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1, ease: "easeOut" }}
-      className="hidden md:flex md:w-[35%] lg:w-1/2 relative overflow-hidden h-screen"
+      className="flex flex-col md:flex-row md:w-[35%] lg:w-1/2 relative overflow-hidden h-[200px] sm:h-[240px] md:h-screen w-full md:w-auto"
     >
       {/* Background Image with Intense Blur */}
       <div className="absolute inset-0">
@@ -116,13 +116,96 @@ export default function AnimatedLeftPanel({ slides, currentSlide, onSlideChange 
       <div className="absolute inset-0 backdrop-blur-3xl" />
 
       {/* Content - Logo Top Left, Tagline Bottom Left */}
-      <div className="relative z-10 flex flex-col justify-between p-6 md:p-8 lg:p-12 h-full w-full">
-        {/* Huge Logo - Top Left */}
+      <div className="relative z-10 flex flex-col md:flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 h-auto md:h-full w-full min-h-[200px] md:min-h-0">
+        {/* Mobile: Compact horizontal layout */}
+        <div className="flex md:hidden items-center justify-between w-full mb-4">
+          {/* Logo - Smaller on mobile */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.2, 0.9, 0.2, 1] }}
+            className="flex items-center"
+          >
+            <motion.img
+              src="/assets/1_rem_bg.png"
+              alt="Urban.IQ Logo"
+              className="w-20 h-20 object-contain drop-shadow-2xl"
+              style={{
+                filter: "drop-shadow(0 0 20px rgba(255,255,255,0.3))",
+              }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.div>
+          
+          {/* Slide Indicators - Mobile */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="flex items-center space-x-2"
+          >
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => onSlideChange(index)}
+                className="focus:outline-none group touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label={`Go to slide ${index + 1}`}
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <motion.div
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentSlide
+                      ? "w-8 bg-white shadow-lg"
+                      : "w-1.5 bg-white/40 group-hover:bg-white/60"
+                  }`}
+                  whileHover={{ scale: 1.3 }}
+                  whileTap={{ scale: 0.9 }}
+                />
+              </button>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Mobile: Tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 1, ease: [0.2, 0.9, 0.2, 1] }}
+          className="md:hidden space-y-2"
+        >
+          {currentSlideData?.quote && (
+            <motion.p
+              className="text-xl sm:text-2xl font-bold text-white leading-tight"
+              style={{
+                textShadow: "0 4px 20px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.6)",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {currentSlideData.quote}
+            </motion.p>
+          )}
+          {currentSlideData?.author && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="text-sm text-white/95 font-medium"
+              style={{
+                textShadow: "0 2px 10px rgba(0,0,0,0.7)",
+              }}
+            >
+              — {currentSlideData.author}
+            </motion.p>
+          )}
+        </motion.div>
+
+        {/* Desktop: Logo Top Left */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8, ease: [0.2, 0.9, 0.2, 1] }}
-          className="flex items-start"
+          className="hidden md:flex items-start"
         >
           <motion.img
             src="/assets/1_rem_bg.png"
@@ -136,12 +219,12 @@ export default function AnimatedLeftPanel({ slides, currentSlide, onSlideChange 
           />
         </motion.div>
 
-        {/* Tagline Bottom Left */}
+        {/* Desktop: Tagline Bottom Left */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1, ease: [0.2, 0.9, 0.2, 1] }}
-          className="space-y-4 max-w-lg"
+          className="hidden md:block space-y-4 max-w-lg"
         >
           {currentSlideData?.quote && (
             <motion.p
@@ -169,12 +252,12 @@ export default function AnimatedLeftPanel({ slides, currentSlide, onSlideChange 
           )}
         </motion.div>
 
-        {/* Slide Indicators */}
+        {/* Desktop: Slide Indicators */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
-          className="flex items-center space-x-2 mt-8"
+          className="hidden md:flex items-center space-x-2 mt-8"
         >
           {slides.map((_, index) => (
             <button

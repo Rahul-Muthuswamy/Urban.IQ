@@ -182,20 +182,27 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
             transition={{ delay: 0.9, duration: 0.6 }}
             className="flex items-start space-x-3 pt-2"
           >
-            <motion.input
-              type="checkbox"
-              id="agreeToTerms"
-              checked={formData.agreeToTerms}
-              onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
-              className="mt-1 w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary focus:ring-2 cursor-pointer"
-              whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
-            />
-            <label htmlFor="agreeToTerms" className="text-sm md:text-base text-gray-700">
+            <motion.label
+              htmlFor="agreeToTerms"
+              className="flex items-start space-x-3 cursor-pointer touch-manipulation min-h-[44px]"
+              style={{ WebkitTapHighlightColor: "transparent" }}
+            >
+              <motion.input
+                type="checkbox"
+                id="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
+                className="mt-1 w-5 h-5 md:w-6 md:h-6 rounded border-gray-300 text-primary focus:ring-primary focus:ring-2 cursor-pointer"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+              />
+              <span className="text-sm md:text-base text-gray-700 pt-0.5">
               I agree to the{" "}
-              <Link to="/terms" className="text-primary font-semibold hover:text-accent transition-colors">
-                Terms & Conditions
-              </Link>
-            </label>
+                <Link to="/terms" className="text-primary font-semibold hover:text-accent transition-colors">
+                  Terms & Conditions
+                </Link>
+              </span>
+            </motion.label>
           </motion.div>
           {errors.agreeToTerms && (
             <motion.p
@@ -216,7 +223,10 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
             transition={{ delay: 1, duration: 0.6, ease: [0.2, 0.9, 0.2, 1] }}
             whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-            className="w-full py-4 md:py-5 rounded-xl bg-gradient-primary text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group mt-2"
+            className="w-full py-4 md:py-5 rounded-xl bg-gradient-primary text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group mt-2 min-h-[48px] touch-manipulation"
+            style={{
+              WebkitTapHighlightColor: "transparent",
+            }}
           >
             <motion.span
               className="relative z-10"
@@ -276,7 +286,10 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
           transition={{ delay: 1.1, duration: 0.6, ease: [0.2, 0.9, 0.2, 1] }}
           whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
           whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-          className="w-full py-4 md:py-5 rounded-xl bg-white border-2 border-gray-200 text-gray-700 font-semibold text-base md:text-lg flex items-center justify-center space-x-3 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
+          className="w-full py-4 md:py-5 rounded-xl bg-white border-2 border-gray-200 text-gray-700 font-semibold text-base md:text-lg flex items-center justify-center space-x-3 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md min-h-[48px] touch-manipulation"
+          style={{
+            WebkitTapHighlightColor: "transparent",
+          }}
         >
           {GitHubIcon}
           <span>GitHub</span>

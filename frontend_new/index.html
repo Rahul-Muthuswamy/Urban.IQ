@@ -7,28 +7,92 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/5_remove_bg.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/5_remove_bg.png" />
     <link rel="shortcut icon" href="/assets/5_remove_bg.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Your City, Reimagined - A civic engagement platform" />
+    
+    <!-- Mobile Viewport & PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" id="viewport-meta" />
+    <meta name="description" content="Your City, Reimagined - A civic engagement platform for community participation and city improvement" />
+    <meta name="keywords" content="civic engagement, community, city improvement, urban planning, democracy" />
+    <meta name="author" content="Urban.IQ" />
+    
+    <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#84cc16" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Urban.IQ" />
+    <meta name="msapplication-TileColor" content="#84cc16" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- iOS Safari -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
     <link rel="manifest" href="/manifest.json" />
-    <title>Urban.IQ</title>
+    <title>Urban.IQ - Your City, Reimagined</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
+      // Service Worker Registration
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register("/sw.js")
+            .register("/sw.js", { scope: "/" })
             .then((registration) => {
-              console.log("SW registered: ", registration);
+              console.log("Service Worker registered successfully:", registration.scope);
+              
+              // Check for updates periodically
+              setInterval(() => {
+                registration.update();
+              }, 60000); // Check every minute
             })
             .catch((registrationError) => {
-              console.log("SW registration failed: ", registrationError);
+              console.log("Service Worker registration failed:", registrationError);
             });
         });
       }
+
+      // Prevent zoom on input focus (iOS Safari)
+      (function() {
+        const viewport = document.getElementById("viewport-meta");
+        const originalContent = viewport ? viewport.content : "";
+        
+        function preventZoom() {
+          if (viewport) {
+            viewport.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+          }
+        }
+        
+        function restoreZoom() {
+          if (viewport) {
+            viewport.content = originalContent || "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover";
+          }
+        }
+        
+        // Prevent zoom when inputs are focused
+        document.addEventListener("focusin", function(e) {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) {
+            preventZoom();
+          }
+        });
+        
+        // Restore zoom when inputs are blurred
+        document.addEventListener("focusout", function(e) {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) {
+            setTimeout(restoreZoom, 300);
+          }
+        });
+      })();
+
+      // PWA Install Prompt
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // You can show a custom install button here
+        console.log("PWA install prompt available");
+      });
     </script>
   </body>
 </html>

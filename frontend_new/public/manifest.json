@@ -1,13 +1,45 @@
 {
-  "name": "Urban.IQ",
+  "name": "Urban.IQ - Your City, Reimagined",
   "short_name": "Urban.IQ",
-  "description": "Your City, Reimagined - A civic engagement platform",
+  "description": "A civic engagement platform for community participation and city improvement",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#84cc16",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/assets/5_remove_bg.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/5_remove_bg.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/5_remove_bg.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/5_remove_bg.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/5_remove_bg.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/assets/5_remove_bg.png",
       "sizes": "192x192",
@@ -16,14 +48,34 @@
     },
     {
       "src": "/assets/5_remove_bg.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/5_remove_bg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["social", "civic", "community"],
+  "categories": ["social", "civic", "community", "productivity"],
   "screenshots": [],
   "shortcuts": [
+    {
+      "name": "Sign In",
+      "short_name": "Sign In",
+      "description": "Sign in to your account",
+      "url": "/login",
+      "icons": [{ "src": "/assets/5_remove_bg.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sign Up",
+      "short_name": "Sign Up",
+      "description": "Create a new account",
+      "url": "/signup",
+      "icons": [{ "src": "/assets/5_remove_bg.png", "sizes": "192x192" }]
+    },
     {
       "name": "Home",
       "short_name": "Home",
@@ -38,7 +90,9 @@
       "url": "/chat",
       "icons": [{ "src": "/assets/5_remove_bg.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "related_applications": [],
+  "iarc_rating_id": ""
 }
 
 
