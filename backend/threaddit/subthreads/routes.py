@@ -113,14 +113,14 @@ def get_thread_by_name(thread_name):
     )
 
 
-@threads.route("threads/subscription/<tid>", methods=["POST"])
+@threads.route("/threads/subscription/<tid>", methods=["POST"])
 @login_required
 def new_subscription(tid):
     Subscription.add(tid, current_user.id)
     return jsonify({"message": "Subscribed"}), 200
 
 
-@threads.route("threads/subscription/<tid>", methods=["DELETE"])
+@threads.route("/threads/subscription/<tid>", methods=["DELETE"])
 @login_required
 def del_subscription(tid):
     subscription = Subscription.query.filter_by(user_id=current_user.id, subthread_id=tid).first()
