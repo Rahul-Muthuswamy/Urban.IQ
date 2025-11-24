@@ -26,6 +26,11 @@ export default {
         "fade-in": "fadeIn 0.8s ease-out",
         "float": "float 6s ease-in-out infinite",
         "glow-pulse": "glowPulse 2s ease-in-out infinite",
+        "sheen-sweep": "sheenSweep 3s ease-in-out infinite",
+        "blob-float": "blobFloat 25s ease-in-out infinite",
+        "zoom-pan": "zoomPan 10s ease-out infinite",
+        "shimmer-line": "shimmerLine 3s ease-in-out infinite",
+        "spring-slide-up": "springSlideUp 0.7s cubic-bezier(0.2, 0.9, 0.2, 1)",
       },
       keyframes: {
         slideIn: {
@@ -43,6 +48,31 @@ export default {
         glowPulse: {
           "0%, 100%": { boxShadow: "0 0 20px rgba(132, 204, 22, 0.5)" },
           "50%": { boxShadow: "0 0 40px rgba(16, 185, 129, 0.8)" },
+        },
+        sheenSweep: {
+          "0%": { transform: "translateX(-100%) translateY(-100%)", opacity: "0" },
+          "50%": { opacity: "0.5" },
+          "100%": { transform: "translateX(100%) translateY(100%)", opacity: "0" },
+        },
+        blobFloat: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -30px) scale(1.2)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+        },
+        zoomPan: {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
+          "100%": { transform: "scale(1)" },
+        },
+        shimmerLine: {
+          "0%": { backgroundPosition: "0% 50%", opacity: "0.4" },
+          "50%": { backgroundPosition: "100% 50%", opacity: "1" },
+          "100%": { backgroundPosition: "0% 50%", opacity: "0.4" },
+        },
+        springSlideUp: {
+          "0%": { transform: "translateY(30px) scale(0.95)", opacity: "0" },
+          "60%": { transform: "translateY(-5px) scale(1.02)", opacity: "0.8" },
+          "100%": { transform: "translateY(0) scale(1)", opacity: "1" },
         },
       },
     },

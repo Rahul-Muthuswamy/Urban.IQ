@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import api from "../api.js";
-import CarouselPanel from "../components/CarouselPanel.jsx";
+import AnimatedLeftPanel from "../components/animated/AnimatedLeftPanel.jsx";
 import SignupForm from "../components/SignupForm.jsx";
 
 const carouselSlides = [
@@ -96,51 +96,21 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden pb-20 md:pb-0">
-      {/* Left Carousel Panel - Shows on mobile as top section */}
-      <CarouselPanel
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden">
+      {/* Left Animated Panel - Hidden on mobile, 35% tablet, 50% desktop */}
+      <AnimatedLeftPanel
         slides={carouselSlides}
         currentSlide={currentSlide}
         onSlideChange={setCurrentSlide}
       />
 
-      {/* Right Signup Form Panel */}
+      {/* Right Signup Form Panel - Full width mobile, 65% tablet, 50% desktop */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="flex-1 flex items-center justify-center p-6 md:p-8 lg:p-12 bg-gradient-to-br from-primary/10 via-white to-accent/10 relative overflow-hidden"
+        className="flex-1 md:w-[65%] lg:w-1/2 flex items-center justify-center bg-gradient-to-b from-white via-primary/5 to-accent/10 relative overflow-hidden min-h-screen py-6 md:py-8 lg:py-12"
       >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute top-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-20 left-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              x: [0, -40, 0],
-              y: [0, 40, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
-
         <SignupForm
           formData={formData}
           setFormData={setFormData}
@@ -152,4 +122,3 @@ export default function Signup() {
     </div>
   );
 }
-

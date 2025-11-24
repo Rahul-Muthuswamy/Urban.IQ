@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api.js";
-import CarouselPanel from "../components/CarouselPanel.jsx";
+import AnimatedLeftPanel from "../components/animated/AnimatedLeftPanel.jsx";
 import SigninForm from "../components/SigninForm.jsx";
 
 const carouselSlides = [
@@ -30,7 +30,7 @@ export default function Signin() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    agreeToTerms: false,
+    // T&C removed from Sign In
   });
   const [errors, setErrors] = useState({});
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -103,7 +103,7 @@ export default function Signin() {
     e.preventDefault();
     setErrors({});
 
-    // Validation
+    // Validation - T&C removed from Sign In
     const newErrors = {};
     if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
@@ -111,9 +111,7 @@ export default function Signin() {
     if (!formData.password || formData.password.length < 1) {
       newErrors.password = "Password is required";
     }
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the Terms & Conditions";
-    }
+    // T&C validation removed for Sign In
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -138,51 +136,21 @@ export default function Signin() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden pb-20 md:pb-0">
-      {/* Left Carousel Panel */}
-      <CarouselPanel
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden">
+      {/* Left Animated Panel - Hidden on mobile, 35% tablet, 50% desktop */}
+      <AnimatedLeftPanel
         slides={carouselSlides}
         currentSlide={currentSlide}
         onSlideChange={setCurrentSlide}
       />
 
-      {/* Right Signin Form Panel */}
+      {/* Right Signin Form Panel - Full width mobile, 65% tablet, 50% desktop */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="flex-1 flex items-center justify-center p-6 md:p-8 lg:p-12 bg-gradient-to-br from-primary/10 via-white to-accent/10 relative overflow-hidden"
+        className="flex-1 md:w-[65%] lg:w-1/2 flex items-center justify-center bg-gradient-to-b from-white via-primary/5 to-accent/10 relative overflow-hidden min-h-screen py-6 md:py-8 lg:py-12"
       >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute top-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-20 left-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              x: [0, -40, 0],
-              y: [0, 40, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
-
         <SigninForm
           formData={formData}
           setFormData={setFormData}
@@ -194,4 +162,3 @@ export default function Signin() {
     </div>
   );
 }
-
