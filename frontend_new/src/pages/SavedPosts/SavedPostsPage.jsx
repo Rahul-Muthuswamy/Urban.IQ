@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api.js";
 import Navbar from "../../components/Navbar.jsx";
-import Logo from "../../components/Logo.jsx";
 import LeftSidebar from "../../components/LeftSidebar.jsx";
 import FeedCard from "../../components/FeedCard.jsx";
 import Footer from "../../components/Footer.jsx";
@@ -109,7 +108,7 @@ export default function SavedPostsPage() {
       </a>
       {/* Navbar */}
       <Navbar />
-      <Logo />
+      <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 ml-5'></img>
 
       <div className="flex flex-col md:flex-row max-w-7xl mx-auto pt-20 md:pt-28 pb-20 md:pb-0">
         {/* Left Sidebar */}

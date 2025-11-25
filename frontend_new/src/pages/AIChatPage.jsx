@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import api from "../api.js";
 import Navbar from "../components/Navbar.jsx";
-import Logo from "../components/Logo.jsx";
 import MessageBubble from "../components/MessageBubble.jsx";
 import TypingIndicator from "../components/TypingIndicator.jsx";
 import ChatInputBar from "../components/ChatInputBar.jsx";
@@ -213,7 +212,7 @@ export default function AIChatPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
-      <Logo />
+      <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 ml-5'></img>
 
       <div className="max-w-4xl mx-auto pt-20 md:pt-28 px-4 md:px-6 min-h-screen flex flex-col">
         {/* Hero Section - Shows when no messages */}
