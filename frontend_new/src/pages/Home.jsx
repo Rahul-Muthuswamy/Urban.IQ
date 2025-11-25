@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api.js";
 import Navbar from "../components/Navbar.jsx";
+import Logo from "../components/Logo.jsx";
 import LeftSidebar from "../components/LeftSidebar.jsx";
 import FiltersBar from "../components/FiltersBar.jsx";
 import FeedCard from "../components/FeedCard.jsx";
@@ -108,7 +109,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 relative">
       {/* Skip to content link for accessibility */}
       <a
         href="#main-content"
@@ -116,8 +117,13 @@ export default function Home() {
       >
         Skip to main content
       </a>
+      
       {/* Navbar */}
       <Navbar />
+
+      {/* Large Logo - Top Left Corner */}
+      {/* <Logo /> */}
+      <img src='/assets/7_remove_bg.png' alt='urban_iq' className='z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 ml-5'></img>
 
       <div className="flex flex-col md:flex-row max-w-7xl mx-auto pt-20 md:pt-28 pb-20 md:pb-0">
         {/* Left Sidebar */}

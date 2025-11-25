@@ -1,9 +1,14 @@
 import logging
 import time
+import sys
+import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
+
+# Add the current directory to the path so we can import rag_retriever
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rag_retriever import ask_rag
 
 logging.basicConfig(level=logging.INFO)

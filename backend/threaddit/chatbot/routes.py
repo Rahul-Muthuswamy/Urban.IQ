@@ -156,12 +156,17 @@ def query():
         response_time_ms = (time.time() - start_time) * 1000
         
         try:
+            # Ensure sources is a valid JSON-serializable list
+            sources_json = sanitized_sources if sanitized_sources else []
+            if not isinstance(sources_json, list):
+                sources_json = []
+            
             chat_entry = ChatHistory(
                 user_id=user_id,
                 ip_address=request.remote_addr if not user_id else None,
                 query=query_text,
                 answer=result.get("answer", "No answer available."),
-                sources=sanitized_sources,
+                sources=sources_json,
                 is_political=is_political,
                 response_time_ms=round(response_time_ms, 2)
             )
@@ -170,6 +175,7 @@ def query():
         except Exception as e:
             logger.error(f"Error saving chat history: {str(e)}")
             db.session.rollback()
+            # Don't fail the request if history saving fails
         
         _analytics_counters["total_requests"] += 1
         _analytics_counters["response_times"].append(response_time_ms)

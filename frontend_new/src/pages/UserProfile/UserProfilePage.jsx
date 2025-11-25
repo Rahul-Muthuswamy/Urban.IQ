@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api.js";
 import Navbar from "../../components/Navbar.jsx";
+import Logo from "../../components/Logo.jsx";
 import ProfileSidebar from "./ProfileSidebar.jsx";
 import ProfileForm from "./ProfileForm.jsx";
 import ChangePasswordForm from "./ChangePasswordForm.jsx";
@@ -55,6 +56,7 @@ export default function UserProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
+      <Logo />
 
       <div className="max-w-7xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-8 md:py-12">
         <motion.div

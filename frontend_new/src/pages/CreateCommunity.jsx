@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api.js";
 import Navbar from "../components/Navbar.jsx";
+import Logo from "../components/Logo.jsx";
 import CommunityForm from "../components/CommunityForm.jsx";
 import SuccessModal from "../components/SuccessModal.jsx";
 
@@ -64,6 +65,7 @@ export default function CreateCommunity() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
+      <Logo />
 
       <div className="max-w-3xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-8 md:py-12">
         <motion.div

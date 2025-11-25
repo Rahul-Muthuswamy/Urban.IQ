@@ -139,22 +139,41 @@ export default function MapsPage() {
   };
 
   const geocode = async (input) => {
+    if (!input || !input.trim()) {
+      throw new Error("Location cannot be empty");
+    }
+
     const coords = parseCoordinates(input);
     if (coords) return coords;
 
-    const { atlas } = window;
-    const result = await searchURLRef.current.searchAddress(
-      atlas.service.Aborter.timeout(4000),
-      input,
-      { limit: 1 }
-    );
-
-    if (result.results.length === 0) {
-      throw new Error(`Unable to find location: ${input}`);
+    if (!window.atlas || !searchURLRef.current) {
+      throw new Error("Map services are not ready. Please wait for the map to load.");
     }
 
-    const position = result.results[0].position;
-    return [position.lon, position.lat];
+    try {
+      const { atlas } = window;
+      const result = await searchURLRef.current.searchAddress(
+        atlas.service.Aborter.timeout(8000),
+        input.trim(),
+        { limit: 1 }
+      );
+
+      if (!result || !result.results || result.results.length === 0) {
+        throw new Error(`Unable to find location: ${input}`);
+      }
+
+      const position = result.results[0].position;
+      if (!position || position.lon === undefined || position.lat === undefined) {
+        throw new Error(`Invalid location data for: ${input}`);
+      }
+
+      return [position.lon, position.lat];
+    } catch (err) {
+      if (err.message) {
+        throw err;
+      }
+      throw new Error(`Geocoding failed for: ${input}. ${err.message || "Please check the address."}`);
+    }
   };
 
   const fetchLocationDetails = async (locationName) => {
@@ -163,7 +182,7 @@ export default function MapsPage() {
     try {
       // Use web search to get location details
       const searchQuery = `${locationName} information facts`;
-      const searchResults = await web_search(searchQuery);
+      const searchResults = await webSearch(searchQuery);
       
       setLocationDetails({
         name: locationName,
@@ -202,6 +221,11 @@ export default function MapsPage() {
       return;
     }
 
+    if (!window.atlas || !routeURLRef.current || !datasourceRef.current || !mapRef.current) {
+      setError("Map is not ready. Please wait for the map to load.");
+      return;
+    }
+
     setIsCalculating(true);
     setError(null);
     setSuccess(null);
@@ -215,11 +239,23 @@ export default function MapsPage() {
 
       setSuccess("Finding optimal route...");
 
-      const startPoint = await geocode(startLocation);
-      const endPoint = await geocode(endLocation);
+      // Geocode start and end locations
+      let startPoint, endPoint;
+      try {
+        startPoint = await geocode(startLocation);
+      } catch (err) {
+        throw new Error(`Could not find start location: ${startLocation}. Please check the address.`);
+      }
 
+      try {
+        endPoint = await geocode(endLocation);
+      } catch (err) {
+        throw new Error(`Could not find end location: ${endLocation}. Please check the address.`);
+      }
+
+      // Calculate route
       const result = await routeURLRef.current.calculateRouteDirections(
-        atlas.service.Aborter.timeout(10000),
+        atlas.service.Aborter.timeout(15000),
         [startPoint, endPoint],
         {
           travelMode: "car",
@@ -229,7 +265,15 @@ export default function MapsPage() {
         }
       );
 
+      if (!result || !result.routes || result.routes.length === 0) {
+        throw new Error("No route found between the specified locations.");
+      }
+
       const geojson = result.geojson.getFeatures();
+      if (!geojson || !geojson.features || geojson.features.length === 0) {
+        throw new Error("Route data is invalid.");
+      }
+
       const route = geojson.features[0];
       const summary = result.routes[0].summary;
 
@@ -249,10 +293,20 @@ export default function MapsPage() {
       ]);
 
       // Update map view
-      mapRef.current.setCamera({
-        bounds: geojson.bbox,
-        padding: { top: 100, bottom: 200, left: 420, right: 50 },
-      });
+      if (geojson.bbox) {
+        mapRef.current.setCamera({
+          bounds: geojson.bbox,
+          padding: { top: 100, bottom: 200, left: 420, right: 50 },
+        });
+      } else {
+        // Fallback: center between start and end
+        const centerLon = (startPoint[0] + endPoint[0]) / 2;
+        const centerLat = (startPoint[1] + endPoint[1]) / 2;
+        mapRef.current.setCamera({
+          center: [centerLon, centerLat],
+          zoom: 12,
+        });
+      }
 
       // Update route data
       setRouteData({
@@ -266,7 +320,18 @@ export default function MapsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Route calculation error:", err);
-      setError(err.message || "Failed to calculate route. Please check your locations.");
+      let errorMessage = "Failed to calculate route. ";
+      
+      if (err.message) {
+        errorMessage += err.message;
+      } else if (err.response) {
+        errorMessage += `API error: ${err.response.status}`;
+      } else {
+        errorMessage += "Please check your locations and try again.";
+      }
+      
+      setError(errorMessage);
+      setTimeout(() => setError(null), 5000);
     } finally {
       setIsCalculating(false);
     }

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import api from "../api.js";
 import Navbar from "../components/Navbar.jsx";
+import Logo from "../components/Logo.jsx";
 import MessageBubble from "../components/MessageBubble.jsx";
 import TypingIndicator from "../components/TypingIndicator.jsx";
 import ChatInputBar from "../components/ChatInputBar.jsx";
@@ -14,6 +15,7 @@ export default function AIChatPage() {
   const messagesEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [showHero, setShowHero] = useState(true);
+  const [ragServiceStatus, setRagServiceStatus] = useState(null);
 
   // Check authentication
   const { data: user, isLoading: userLoading } = useQuery({
@@ -118,11 +120,33 @@ export default function AIChatPage() {
       // Remove optimistic user message on error
       setMessages((prev) => prev.slice(0, -1));
       
+      // Determine error message based on status code
+      let errorText = "Sorry, I encountered an error. Please try again.";
+      
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.message || "";
+        
+        if (status === 503 || message.includes("unavailable")) {
+          errorText = "The AI Assistant service is currently unavailable. Please make sure the RAG service is running on port 8000 and try again later.";
+        } else if (status === 429) {
+          errorText = "You're sending messages too quickly. Please wait a moment and try again.";
+        } else if (status === 400) {
+          errorText = message || "Invalid request. Please check your message and try again.";
+        } else if (status === 401) {
+          errorText = "You need to be logged in to use the AI Assistant.";
+        } else {
+          errorText = message || `Error: ${status}. Please try again.`;
+        }
+      } else if (error.request) {
+        errorText = "Unable to connect to the server. Please check your internet connection and make sure the backend is running.";
+      }
+      
       // Show error message
       const errorMessage = {
         id: `error-${Date.now()}`,
         type: "ai",
-        text: error.response?.data?.message || "Sorry, I encountered an error. Please try again.",
+        text: errorText,
         isError: true,
         timestamp: new Date().toISOString(),
       };
@@ -135,6 +159,36 @@ export default function AIChatPage() {
       sendMessage(text.trim());
     }
   };
+
+  // Check RAG service health on mount
+  useEffect(() => {
+    const checkRAGService = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/ping", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRagServiceStatus("online");
+          console.log("RAG service is online:", data);
+        } else {
+          setRagServiceStatus("error");
+          console.warn("RAG service health check failed:", response.status);
+        }
+      } catch (error) {
+        setRagServiceStatus("offline");
+        console.warn("RAG service is not running. Please start it using: python backend/threaddit/rag/start_rag_service.py or run: python backend/start_rag_service.py");
+      }
+    };
+    
+    if (user) {
+      checkRAGService();
+      // Check every 30 seconds
+      const interval = setInterval(checkRAGService, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -159,6 +213,7 @@ export default function AIChatPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
+      <Logo />
 
       <div className="max-w-4xl mx-auto pt-20 md:pt-28 px-4 md:px-6 min-h-screen flex flex-col">
         {/* Hero Section - Shows when no messages */}
@@ -202,6 +257,29 @@ export default function AIChatPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* RAG Service Status Warning */}
+        {ragServiceStatus === "offline" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-4 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl shadow-sm"
+          >
+            <div className="flex items-start space-x-3">
+              <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-yellow-800">
+                  AI Assistant Service Unavailable
+                </p>
+                <p className="text-xs text-yellow-700 mt-1">
+                  The RAG service is not running. Please start it by running: <code className="bg-yellow-100 px-1 rounded">python backend/start_rag_service.py</code>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto py-6 space-y-4">

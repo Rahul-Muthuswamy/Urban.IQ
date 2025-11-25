@@ -125,18 +125,6 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="hidden md:flex fixed top-4 left-4 right-4 z-50 items-center justify-between gap-3"
       >
-        {/* Logo - HUGE Icon Only, No Container, No Animations */}
-        <div className="flex-shrink-0">
-          <Link to="/home">
-            <img
-              src="/assets/3_remove_bg.png"
-              alt="Urban.IQ Logo"
-              aria-label="UrbanIQ logo"
-              className="w-64 h-64 sm:w-72 sm:h-72 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem] 2xl:w-[36rem] 2xl:h-[36rem] object-contain"
-            />
-          </Link>
-        </div>
-
         {/* Navigation Items as Individual Islands - Centered */}
         <div className="flex items-center gap-3 flex-1 justify-center">
           {/* Discover Button - Special Icon Button */}
@@ -582,16 +570,6 @@ export default function Navbar() {
         className="md:hidden fixed top-0 left-0 right-0 z-50 glass backdrop-blur-xl border-b border-white/20"
       >
         <div className="px-4 h-16 flex items-center justify-between">
-          {/* Logo - HUGE Icon Only, No Container, No Animations */}
-          <Link to="/home" className="flex items-center">
-            <img
-              src="/assets/3_remove_bg.png"
-              alt="Urban.IQ Logo"
-              aria-label="UrbanIQ logo"
-              className="w-48 h-48 object-contain"
-            />
-          </Link>
-
           {/* Hamburger Menu Button */}
           <motion.button
             onClick={() => setShowMobileMenu(!showMobileMenu)}

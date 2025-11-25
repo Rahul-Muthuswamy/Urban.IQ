@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import api from "../../api.js";
 import Navbar from "../../components/Navbar.jsx";
+import Logo from "../../components/Logo.jsx";
 import PostCard from "./PostCard.jsx";
 import ActionsBar from "./ActionsBar.jsx";
 import CommentsList from "./CommentsList.jsx";
@@ -56,6 +57,7 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
         <Navbar />
+        <Logo />
         <div className="max-w-4xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -83,6 +85,7 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
         <Navbar />
+        <Logo />
         <div className="max-w-4xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-12">
           <SkeletonLoader />
         </div>
@@ -125,6 +128,7 @@ export default function PostDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
+      <Logo />
 
       <div className="max-w-4xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-8 md:py-12">
         {/* Skip to content link for accessibility */}

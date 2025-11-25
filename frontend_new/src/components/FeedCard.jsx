@@ -1,18 +1,78 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api.js";
 import VoteButtons from "./VoteButtons.jsx";
+import PostActionMenu from "./posts/PostActionMenu.jsx";
+import EditPostModal from "./posts/EditPostModal.jsx";
+import DeleteConfirmModal from "./posts/DeleteConfirmModal.jsx";
+import ReportPostModal from "./posts/ReportPostModal.jsx";
 
 export default function FeedCard({ post, index, showUnsaveButton = false }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const postInfo = post.post_info || {};
   const userInfo = post.user_info || {};
   const threadInfo = post.thread_info || {};
+  const isSaved = post.current_user?.saved || false;
+
+  // Get current user
+  const { data: currentUser } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      try {
+        const response = await api.get("/api/user");
+        return response.data;
+      } catch {
+        return null;
+      }
+    },
+    retry: false,
+  });
+
+  // Save/Unsave mutation
+  const { mutate: toggleSave, isPending: isSavePending } = useMutation({
+    mutationFn: async (shouldSave) => {
+      if (shouldSave) {
+        await api.put(`/api/posts/saved/${postInfo.id}`);
+      } else {
+        await api.delete(`/api/posts/saved/${postInfo.id}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => {
+      console.error("Error toggling save:", error);
+      alert(error.response?.data?.message || "Failed to save post. Please try again.");
+    },
+  });
+
+  // Delete mutation
+  const { mutate: deletePost, isPending: isDeletePending } = useMutation({
+    mutationFn: async () => {
+      await api.delete(`/api/post/${postInfo.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+      setShowDeleteModal(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting post:", error);
+      alert(error.response?.data?.message || "Failed to delete post. Please try again.");
+    },
+  });
 
   // Unsave mutation for saved posts page
   const { mutate: unsavePost, isPending: isUnsavePending } = useMutation({
@@ -29,17 +89,71 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
     },
   });
 
-  // Fetch comments
-  const fetchComments = async () => {
-    if (!comments && !showComments) {
+  // Handle comments click - navigate to post detail
+  const handleCommentsClick = (e) => {
+    e.preventDefault();
+    navigate(`/posts/${postInfo.id}`);
+  };
+
+  // Handle share
+  const handleShare = async () => {
+    const postUrl = `${window.location.origin}/posts/${postInfo.id}`;
+
+    // Try Web Share API first
+    if (navigator.share) {
       try {
-        const response = await api.get(`/api/comments/post/${postInfo.id}`);
-        setComments(response.data.comment_info || []);
+        await navigator.share({
+          title: postInfo.title,
+          text: postInfo.content?.substring(0, 200) || "",
+          url: postUrl,
+        });
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+        return;
       } catch (error) {
-        console.error("Error fetching comments:", error);
+        if (error.name !== "AbortError") {
+          console.error("Share failed:", error);
+        }
       }
     }
-    setShowComments(!showComments);
+
+    // Fallback to copy to clipboard
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+      // Fallback: select text
+      const textArea = document.createElement("textarea");
+      textArea.value = postUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    }
+  };
+
+  // Handle save
+  const handleSave = () => {
+    toggleSave(!isSaved);
+  };
+
+  // Handle edit
+  const handleEdit = () => {
+    setShowEditModal(true);
+  };
+
+  // Handle delete
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  // Handle report
+  const handleReport = () => {
+    setShowReportModal(true);
   };
 
   // Format date
@@ -100,9 +214,11 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
           {/* Actions Row */}
           <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-200">
             <div className="flex items-center space-x-4">
-              <Link
-                to={`/posts/${postInfo.id}`}
+              <motion.button
+                onClick={handleCommentsClick}
                 className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -115,9 +231,15 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
                 <span className="text-sm font-medium">
                   {postInfo.comments_count || 0} Comment{postInfo.comments_count !== 1 ? "s" : ""}
                 </span>
-              </Link>
+              </motion.button>
 
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors">
+              <motion.button
+                onClick={handleShare}
+                className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={isSavePending}
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -127,18 +249,15 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
                   />
                 </svg>
                 <span className="text-sm font-medium">Share</span>
-              </button>
+              </motion.button>
 
-              <button className="text-gray-600 hover:text-primary transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                  />
-                </svg>
-              </button>
+              <PostActionMenu
+                post={post}
+                onSave={handleSave}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onReport={handleReport}
+              />
 
               {/* Unsave Button - Only shown on saved posts page */}
               {showUnsaveButton && (
@@ -202,6 +321,57 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
                   </motion.div>
                 ))
               )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modals */}
+      {showEditModal && (
+        <EditPostModal
+          post={post}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            queryClient.invalidateQueries({ queryKey: ["posts"] });
+            queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+          }}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          postTitle={postInfo.title}
+          onConfirm={() => deletePost()}
+          onCancel={() => setShowDeleteModal(false)}
+          isDeleting={isDeletePending}
+        />
+      )}
+
+      {showReportModal && (
+        <ReportPostModal
+          postId={postInfo.id}
+          onClose={() => setShowReportModal(false)}
+          onSuccess={() => {
+            setShowReportModal(false);
+          }}
+        />
+      )}
+
+      {/* Share Success Toast */}
+      <AnimatePresence>
+        {shareSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="fixed top-24 right-4 z-50 glass rounded-xl px-4 py-3 shadow-glass-lg border border-green-200 bg-green-50"
+          >
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-green-700 font-medium">Link copied!</span>
             </div>
           </motion.div>
         )}
