@@ -51,10 +51,45 @@ def user_register():
 @user.route("/user", methods=["PATCH"])
 @login_required
 def user_patch():
-    image = request.files.get("avatar")
-    form_data = request.form.to_dict()
-    current_user.patch(image=image, form_data=form_data)
-    return jsonify(current_user.as_dict()), 200
+    try:
+        image = request.files.get("avatar")
+        form_data = request.form.to_dict()
+        
+        print(f"[User Patch] Updating user {current_user.username}")
+        print(f"[User Patch] Form data keys: {list(form_data.keys())}")
+        print(f"[User Patch] Form data values: {form_data}")
+        print(f"[User Patch] Has avatar file: {image is not None}")
+        if image:
+            print(f"[User Patch] Avatar filename: {image.filename}, content_type: {image.content_type}")
+        
+        # Ensure user is in the session
+        if current_user not in db.session:
+            db.session.add(current_user)
+        
+        # Update user
+        current_user.patch(image=image, form_data=form_data)
+        
+        # Refresh the user object to ensure we have the latest data from database
+        db.session.refresh(current_user)
+        
+        # Get updated user data
+        updated_user = current_user.as_dict()
+        
+        print(f"[User Patch] Updated user data:")
+        print(f"  - username: {updated_user.get('username')}")
+        print(f"  - bio: {updated_user.get('bio')}")
+        print(f"  - first_name: {updated_user.get('first_name')}")
+        print(f"  - last_name: {updated_user.get('last_name')}")
+        print(f"  - phone_number: {updated_user.get('phone_number')}")
+        print(f"  - avatar: {updated_user.get('avatar')}")
+        
+        return jsonify(updated_user), 200
+    except Exception as e:
+        import traceback
+        print(f"[User Patch] Error updating user: {str(e)}")
+        print(traceback.format_exc())
+        db.session.rollback()
+        return jsonify({"message": f"Error updating profile: {str(e)}"}), 500
 
 
 @user.route("/user", methods=["DELETE"])

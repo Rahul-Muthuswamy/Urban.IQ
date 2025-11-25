@@ -22,7 +22,7 @@ export default function ChangePasswordForm() {
     mutationFn: async (data) => {
       // Try the endpoint mentioned in requirements
       try {
-        const response = await api.post("/api/user/password", {
+        const response = await api.post("/api/auth/change-password", {
           old_password: data.current_password,
           new_password: data.new_password,
         });

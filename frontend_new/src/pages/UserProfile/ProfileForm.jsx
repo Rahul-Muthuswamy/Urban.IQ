@@ -34,45 +34,19 @@ export default function ProfileForm({ user }) {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
 
-      // Try to parse bio as JSON for extended fields
-      let extendedData = {};
-      let bioText = "";
-      if (user.bio) {
-        try {
-          const parsed = JSON.parse(user.bio);
-          if (parsed && typeof parsed === "object") {
-            bioText = parsed.bio_text || "";
-            extendedData = {
-              first_name: parsed.first_name || "",
-              last_name: parsed.last_name || "",
-              phone: parsed.phone || "",
-              address_line1: parsed.address_line1 || "",
-              address_line2: parsed.address_line2 || "",
-              city: parsed.city || "",
-              state: parsed.state || "",
-              pincode: parsed.pincode || "",
-            };
-          } else {
-            bioText = user.bio;
-          }
-        } catch {
-          // If bio is not JSON, use it as-is
-          bioText = user.bio;
-        }
-      }
-
+      // Use direct fields from backend (no longer stored in bio as JSON)
       setFormData({
         username: user.username || "",
         email: user.email || "",
-        bio: bioText,
-        first_name: extendedData.first_name || firstName || "",
-        last_name: extendedData.last_name || lastName || "",
-        phone: extendedData.phone || "",
-        address_line1: extendedData.address_line1 || "",
-        address_line2: extendedData.address_line2 || "",
-        city: extendedData.city || "",
-        state: extendedData.state || "",
-        pincode: extendedData.pincode || "",
+        bio: user.bio || "",
+        first_name: user.first_name || firstName || "",
+        last_name: user.last_name || lastName || "",
+        phone: user.phone_number || "",
+        address_line1: user.address_line1 || "",
+        address_line2: user.address_line2 || "",
+        city: user.city || "",
+        state: user.state || "",
+        pincode: user.pincode || "",
       });
     }
   }, [user]);
@@ -83,32 +57,38 @@ export default function ProfileForm({ user }) {
       // Prepare form data for backend
       const formDataToSend = new FormData();
       
-      // Store extended fields in bio as JSON (only if there's extended data)
-      const extendedData = {
-        first_name: data.first_name || "",
-        last_name: data.last_name || "",
-        phone: data.phone || "",
-        address_line1: data.address_line1 || "",
-        address_line2: data.address_line2 || "",
-        city: data.city || "",
-        state: data.state || "",
-        pincode: data.pincode || "",
-      };
+      // Add all profile fields directly (backend now supports them)
+      if (data.bio !== undefined) {
+        formDataToSend.append("bio", data.bio || "");
+      }
+      if (data.first_name !== undefined) {
+        formDataToSend.append("first_name", data.first_name || "");
+      }
+      if (data.last_name !== undefined) {
+        formDataToSend.append("last_name", data.last_name || "");
+      }
+      if (data.phone !== undefined) {
+        formDataToSend.append("phone_number", data.phone || "");
+      }
+      if (data.address_line1 !== undefined) {
+        formDataToSend.append("address_line1", data.address_line1 || "");
+      }
+      if (data.address_line2 !== undefined) {
+        formDataToSend.append("address_line2", data.address_line2 || "");
+      }
+      if (data.city !== undefined) {
+        formDataToSend.append("city", data.city || "");
+      }
+      if (data.state !== undefined) {
+        formDataToSend.append("state", data.state || "");
+      }
+      if (data.pincode !== undefined) {
+        formDataToSend.append("pincode", data.pincode || "");
+      }
       
-      // Combine bio text with extended data as JSON
-      const bioObject = {
-        bio_text: data.bio || "",
-        ...extendedData,
-      };
-      
-      formDataToSend.append("bio", JSON.stringify(bioObject));
       formDataToSend.append("content_type", "text");
 
-      const response = await api.patch("/api/user", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.patch("/api/user", formDataToSend);
       return response.data;
     },
     onSuccess: () => {

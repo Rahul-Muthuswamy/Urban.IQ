@@ -47,8 +47,9 @@ def get_posts(feed_name):
 def get_post(pid):
     post_info = PostInfo.query.filter_by(post_id=pid).first()
     if post_info:
+        cur_user = current_user.id if current_user.is_authenticated else None
         return (
-            jsonify({"post": post_info.as_dict()}),
+            jsonify({"post": post_info.as_dict(cur_user=cur_user)}),
             200,
         )
     return jsonify({"message": "Invalid Post"}), 400

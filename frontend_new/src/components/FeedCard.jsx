@@ -327,7 +327,7 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
       </AnimatePresence>
 
       {/* Modals */}
-      {showEditModal && (
+      {showEditModal && post && (
         <EditPostModal
           post={post}
           onClose={() => setShowEditModal(false)}
@@ -335,6 +335,7 @@ export default function FeedCard({ post, index, showUnsaveButton = false }) {
             setShowEditModal(false);
             queryClient.invalidateQueries({ queryKey: ["posts"] });
             queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+            queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
           }}
         />
       )}

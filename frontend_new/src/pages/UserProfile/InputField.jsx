@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 export default function InputField({
   label,
   id,
+  name,
   type = "text",
   value,
   onChange,
@@ -39,14 +40,15 @@ export default function InputField({
       >
         {/* Icon */}
         {icon && (
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
             {icon}
           </div>
         )}
 
         {/* Input */}
-        <motion.input
+        <input
           id={id}
+          name={name}
           type={inputType}
           value={value || ""}
           onChange={onChange}
@@ -56,7 +58,7 @@ export default function InputField({
           required={required}
           disabled={disabled || readOnly}
           readOnly={readOnly}
-          className={`glass-input w-full px-4 py-3 rounded-xl focus:outline-none text-base transition-all duration-300 ${
+          className={`glass-input w-full px-4 py-3 rounded-xl focus:outline-none text-base transition-all duration-300 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-800 ${
             icon ? "pl-12" : ""
           } ${
             type === "password" ? "pr-12" : ""
@@ -64,6 +66,10 @@ export default function InputField({
             error ? "border-2 border-red-300" : ""
           } ${
             readOnly ? "bg-gray-100/50 cursor-not-allowed" : ""
+          } ${
+            focused ? "ring-2 ring-primary/50 border-primary/50" : ""
+          } ${
+            disabled ? "opacity-50 cursor-not-allowed" : ""
           }`}
           style={{
             boxShadow: focused

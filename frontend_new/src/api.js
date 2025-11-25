@@ -13,10 +13,14 @@ const api = axios.create({
   },
 });
 
-// Request interceptor for debugging
+// Request interceptor for debugging and FormData handling
 api.interceptors.request.use(
   (config) => {
     console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
+    // If data is FormData, remove Content-Type header to let browser set it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
     return config;
   },
   (error) => {

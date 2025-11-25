@@ -10,6 +10,14 @@ export default function ActionsBar({ post }) {
   const [shareSuccess, setShareSuccess] = useState(false);
   const postInfo = post.post_info || {};
   const currentUser = post.current_user || {};
+  
+  // Debug logging
+  console.log("[ActionsBar] Post data:", {
+    postId: postInfo.id,
+    postKarma: postInfo.post_karma,
+    currentUser: currentUser,
+    has_upvoted: currentUser.has_upvoted,
+  });
 
   // Save/Unsave mutation
   const { mutate: toggleSave } = useMutation({

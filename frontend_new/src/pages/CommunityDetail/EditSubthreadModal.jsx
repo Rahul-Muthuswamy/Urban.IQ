@@ -32,23 +32,26 @@ export default function EditSubthreadModal({ community, onClose, onSuccess }) {
       formDataToSend.append("description", data.description.trim() || "");
       formDataToSend.append("rules", data.rules.trim() || "");
       
+      // Handle logo upload
       if (logoFile) {
         formDataToSend.append("logo", logoFile);
+        formDataToSend.append("logo_content_type", "image");
       }
+      
+      // Handle banner upload
       if (bannerFile) {
         formDataToSend.append("banner", bannerFile);
+        formDataToSend.append("banner_content_type", "image");
       }
 
-      const response = await api.patch(`/api/threads/thread/${community.id}`, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.patch(`/api/thread/${community.id}`, formDataToSend);
       return response.data;
     },
     onSuccess: () => {
+      // Invalidate all community-related queries
       queryClient.invalidateQueries({ queryKey: ["community"] });
-      onSuccess();
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
+      if (onSuccess) onSuccess();
     },
     onError: (error) => {
       console.error("Error updating community:", error);

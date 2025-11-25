@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import api from "../../api.js";
 import VoteButtons from "../../components/VoteButtons.jsx";
-import PostActionMenu from "../../components/posts/PostActionMenu.jsx";
 
 export default function PostCard({ post, index }) {
   const postInfo = post.post_info || {};
@@ -146,14 +145,6 @@ export default function PostCard({ post, index }) {
                 </svg>
                 <span className="text-sm font-medium">Share</span>
               </button>
-
-              <PostActionMenu
-                post={post}
-                onSave={() => console.log("Save clicked")}
-                onEdit={() => console.log("Edit clicked")}
-                onDelete={() => console.log("Delete clicked")}
-                onReport={() => console.log("Report clicked")}
-              />
             </div>
           </div>
         </div>

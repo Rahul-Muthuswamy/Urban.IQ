@@ -1,22 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import api from "../api.js";
 
 export default function VoteButtons({ postId, initialVote, initialKarma }) {
-  const [vote, setVote] = useState(initialVote);
+  // Convert initialVote to boolean or null
+  const normalizedInitialVote = initialVote === true ? true : initialVote === false ? false : null;
+  const [vote, setVote] = useState(normalizedInitialVote);
   const [karma, setKarma] = useState(initialKarma || 0);
   const queryClient = useQueryClient();
 
+  // Update state when props change
+  useEffect(() => {
+    const normalized = initialVote === true ? true : initialVote === false ? false : null;
+    console.log(`[VoteButtons] Props updated for post ${postId}:`, {
+      initialVote,
+      normalized,
+      initialKarma,
+    });
+    setVote(normalized);
+    setKarma(initialKarma || 0);
+  }, [initialVote, initialKarma, postId]);
+
   const { mutate: handleVote } = useMutation({
-    mutationFn: async ({ isUpvote, shouldDelete }) => {
+    mutationFn: async ({ isUpvote, shouldDelete, previousVote }) => {
+      console.log(`[VoteButtons] mutationFn called: isUpvote=${isUpvote}, shouldDelete=${shouldDelete}, previousVote=${previousVote}`);
+      
       if (shouldDelete) {
+        console.log(`[VoteButtons] Deleting reaction for post ${postId}`);
         await api.delete(`/api/reactions/post/${postId}`);
-      } else if (vote === null) {
+      } else if (previousVote === null || previousVote === undefined) {
         // Create new reaction
+        console.log(`[VoteButtons] Creating new reaction for post ${postId}: is_upvote=${isUpvote}`);
         await api.put(`/api/reactions/post/${postId}`, { is_upvote: isUpvote });
       } else {
         // Update existing reaction
+        console.log(`[VoteButtons] Updating reaction for post ${postId}: is_upvote=${isUpvote}`);
         await api.patch(`/api/reactions/post/${postId}`, { is_upvote: isUpvote });
       }
     },
@@ -26,51 +45,80 @@ export default function VoteButtons({ postId, initialVote, initialKarma }) {
       const previousKarma = karma;
 
       if (shouldDelete) {
+        // Removing vote - reverse the karma change
         setVote(null);
-        setKarma((prev) => prev + (previousVote ? 1 : -1));
+        if (previousVote === true) {
+          // Was upvoted, removing upvote decreases karma by 1
+          setKarma((prev) => prev - 1);
+        } else if (previousVote === false) {
+          // Was downvoted, removing downvote increases karma by 1
+          setKarma((prev) => prev + 1);
+        }
       } else {
         const newVote = isUpvote;
         if (previousVote === null) {
+          // No previous vote - add new vote
           setVote(newVote);
           setKarma((prev) => prev + (newVote ? 1 : -1));
         } else if (previousVote !== newVote) {
+          // Changing vote (upvote to downvote or vice versa)
+          // Remove old vote effect and add new vote effect
           setVote(newVote);
-          setKarma((prev) => prev + (newVote ? 2 : -2));
-        } else {
-          // Same vote clicked - remove vote
-          setVote(null);
-          setKarma((prev) => prev + (newVote ? -1 : 1));
+          if (previousVote === true && newVote === false) {
+            // Upvote to downvote: -1 (remove upvote) + -1 (add downvote) = -2
+            setKarma((prev) => prev - 2);
+          } else if (previousVote === false && newVote === true) {
+            // Downvote to upvote: +1 (remove downvote) + 1 (add upvote) = +2
+            setKarma((prev) => prev + 2);
+          }
         }
+        // If previousVote === newVote, shouldDelete should be true, so this shouldn't happen
       }
 
       return { previousVote, previousKarma };
     },
+    onSuccess: (data, variables) => {
+      // Invalidate all post-related queries
+      console.log(`[VoteButtons] Vote successful for post ${postId}, invalidating cache`);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["userPosts"] });
+      
+      // Also refetch the post to get updated vote status
+      queryClient.refetchQueries({ queryKey: ["post", postId] });
+    },
     onError: (err, variables, context) => {
       // Rollback on error
+      console.error(`[VoteButtons] Error voting on post ${postId}:`, err);
       if (context) {
         setVote(context.previousVote);
         setKarma(context.previousKarma);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["post", postId] });
-    },
   });
 
   const handleUpvote = () => {
-    if (vote === true) {
-      handleVote({ isUpvote: true, shouldDelete: true });
+    console.log(`[VoteButtons] Upvote clicked for post ${postId}, current vote:`, vote);
+    const currentVote = vote;
+    if (currentVote === true) {
+      // Already upvoted - remove vote
+      handleVote({ isUpvote: true, shouldDelete: true, previousVote: currentVote });
     } else {
-      handleVote({ isUpvote: true, shouldDelete: false });
+      // Not upvoted or downvoted - add/change to upvote
+      handleVote({ isUpvote: true, shouldDelete: false, previousVote: currentVote });
     }
   };
 
   const handleDownvote = () => {
-    if (vote === false) {
-      handleVote({ isUpvote: false, shouldDelete: true });
+    console.log(`[VoteButtons] Downvote clicked for post ${postId}, current vote:`, vote);
+    const currentVote = vote;
+    if (currentVote === false) {
+      // Already downvoted - remove vote
+      handleVote({ isUpvote: false, shouldDelete: true, previousVote: currentVote });
     } else {
-      handleVote({ isUpvote: false, shouldDelete: false });
+      // Not downvoted or upvoted - add/change to downvote
+      handleVote({ isUpvote: false, shouldDelete: false, previousVote: currentVote });
     }
   };
 

@@ -9,6 +9,14 @@ CREATE TABLE public.users (
     email TEXT NOT NULL UNIQUE,
     avatar TEXT,
     bio TEXT,
+    first_name TEXT,
+    last_name TEXT,
+    phone_number TEXT,
+    address_line1 TEXT,
+    address_line2 TEXT,
+    city TEXT,
+    state TEXT,
+    pincode TEXT,
     registration_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

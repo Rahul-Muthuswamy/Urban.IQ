@@ -20,10 +20,12 @@ export default function PostDetailPage() {
     data: postData,
     isLoading: postLoading,
     error: postError,
+    refetch: refetchPost,
   } = useQuery({
     queryKey: ["post", postId],
     queryFn: async () => {
       const response = await api.get(`/api/post/${postId}`);
+      console.log("[PostDetailPage] Fetched post data:", response.data.post);
       return response.data.post;
     },
     enabled: !!postId && !isNaN(postId),

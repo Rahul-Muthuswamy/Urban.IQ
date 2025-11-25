@@ -215,30 +215,56 @@ def new_thread():
 @login_required
 @auth_role(["admin", "mod"])
 def update_thread(tid):
-    thread = Subthread.query.filter_by(id=tid).first()
-    if not thread:
-        return jsonify({"message": "Invalid Thread"}), 400
-    logo_image = request.files.get("logo") or request.files.get("media")  # Support legacy "media"
-    banner_image = request.files.get("banner")
-    form_data = request.form.to_dict()
-    
-    if request.files.get("media") and not logo_image:
-        form_data["logo_content_type"] = "image"
-        form_data["logo_url"] = form_data.get("content_url")
-    elif form_data.get("content_type"):
-        form_data["logo_content_type"] = form_data.get("content_type")
-        form_data["logo_url"] = form_data.get("content_url")
-    
-    thread.patch(form_data, logo_image, banner_image)
-    return (
-        jsonify(
-            {
-                "message": "Thread updated",
-                "new_data": {"threadData": thread.as_dict(current_user.id if current_user.is_authenticated else None)},
-            }
-        ),
-        200,
-    )
+    try:
+        thread = Subthread.query.filter_by(id=tid).first()
+        if not thread:
+            return jsonify({"message": "Invalid Thread"}), 400
+        
+        logo_image = request.files.get("logo") or request.files.get("media")  # Support legacy "media"
+        banner_image = request.files.get("banner")
+        form_data = request.form.to_dict()
+        
+        # Handle logo content type
+        if logo_image:
+            form_data["logo_content_type"] = "image"
+        elif form_data.get("logo_content_type"):
+            # Already set by frontend
+            pass
+        elif form_data.get("content_type"):
+            # Legacy support
+            form_data["logo_content_type"] = form_data.get("content_type")
+            form_data["logo_url"] = form_data.get("content_url")
+        
+        # Handle banner content type
+        if banner_image:
+            form_data["banner_content_type"] = "image"
+        elif form_data.get("banner_content_type"):
+            # Already set by frontend
+            pass
+        
+        # Update name if provided (but don't allow changing it if it would conflict)
+        if form_data.get("name") and form_data.get("name") != thread.name:
+            # Check if new name already exists
+            existing = Subthread.query.filter_by(name=form_data.get("name")).first()
+            if existing and existing.id != thread.id:
+                return jsonify({"message": "Community name already exists"}), 400
+            thread.name = form_data.get("name")
+        
+        thread.patch(form_data, logo_image, banner_image)
+        return (
+            jsonify(
+                {
+                    "message": "Thread updated",
+                    "new_data": {"threadData": thread.as_dict(current_user.id if current_user.is_authenticated else None)},
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        import traceback
+        print(f"Error updating thread: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({"message": f"Error updating thread: {str(e)}"}), 500
 
 
 @threads.route("/thread/mod/<tid>/<username>", methods=["PUT"])
