@@ -22,7 +22,7 @@ export default function FormField({
     },
     focused: {
       scale: 1.01,
-      boxShadow: "0 0 0 3px rgba(132, 204, 22, 0.2), 0 0 20px rgba(132, 204, 22, 0.3)",
+      boxShadow: "0 0 0 3px rgba(132, 204, 22, 0)",
       transition: {
         type: "spring",
         stiffness: 300,
@@ -47,7 +47,7 @@ export default function FormField({
       <motion.div
         variants={inputVariants}
         animate={focused ? "focused" : "unfocused"}
-        className="relative"
+        className="relative p-px bg-black/10 rounded-[0.85rem]"
       >
         <InputComponent
           id={id}

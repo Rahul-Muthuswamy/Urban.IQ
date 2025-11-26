@@ -72,7 +72,7 @@ export default function CommunityHeader({ community, onJoinChange }) {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100"
+      className="glass rounded-2xl shadow-lg overflow-visible"
     >
       {/* Header Content - Matching Reference Layout */}
       <div className="p-6 md:p-8">

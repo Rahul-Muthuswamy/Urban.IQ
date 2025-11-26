@@ -454,7 +454,7 @@ export default function Navbar() {
             <>
               <motion.button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="glass rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glass-xl transition-all duration-300 relative overflow-hidden group"
+                className="glass rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glow transition-all duration-300 relative overflow-hidden group"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

@@ -18,16 +18,33 @@
 }
 
 @layer utilities {
-  .glass {
+  /* .glass {
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.18);
+  } */
+  
+  .glass {
+    border-radius: 12.5px;
+    border: 1.5px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.20);
+    box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.10);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
-  .glass-dark {
+  /* .glass-dark {
     background: rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  } */
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.20);
+    box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -55,24 +72,44 @@
     @apply bg-gradient-to-r from-primary to-accent;
   }
 
-  .shadow-glass {
+  /* .shadow-glass {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  } */
+  
+  .shadow-glass {
+    box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.10);
   }
-
+  
   .shadow-glass-lg {
-    box-shadow: 0 20px 60px 0 rgba(31, 38, 135, 0.5);
+    box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.10);
+  }
+  
+  .shadow-glass-xl {
+    box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.10);
   }
 
-  .shadow-glass-xl {
+  /* .shadow-glass-lg {
+    box-shadow: 0 20px 60px 0 rgba(31, 38, 135, 0.5);
+  } */
+
+  /* .shadow-glass-xl {
     box-shadow: 0 25px 80px 0 rgba(31, 38, 135, 0.6);
-  }
+  } */
 
   .shadow-glow {
-    box-shadow: 0 0 20px rgba(132, 204, 22, 0.5);
+    box-shadow: 0 0 10px rgba(132, 204, 22, 0.5);
   }
+/* 
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(132, 204, 22, 0.5);
+  } */
+
+  /* .shadow-glow-lg {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+  } */
 
   .shadow-glow-lg {
-    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
   }
 
   .sr-only {
@@ -140,8 +177,8 @@
   }
 
   button:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
+  /* input:focus-visible,
+  textarea:focus-visible, */
   select:focus-visible {
     outline: 2px solid #84cc16;
     outline-offset: 2px;
@@ -159,5 +196,19 @@
       font-size: 16px !important;
     }
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(0deg, #333 0%, #666 100%);
+    border-radius: 6px;
+  }
+
 }
 

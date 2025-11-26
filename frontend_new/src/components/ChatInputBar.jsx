@@ -37,19 +37,19 @@ export default function ChatInputBar({ onSend, disabled, isLoading }) {
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="sticky bottom-0 py-4 md:py-6 bg-gradient-to-t from-white via-white/95 to-transparent"
+      className="sticky bottom-0 py-4 md:py-6"
     >
       <form onSubmit={handleSubmit} className="relative">
         <motion.div
           className="glass rounded-2xl shadow-glass-lg overflow-hidden"
           animate={{
             boxShadow: focused
-              ? "0 0 0 3px rgba(132, 204, 22, 0.2), 0 20px 60px 0 rgba(31, 38, 135, 0.5)"
-              : "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+              ? "0 0 0 3px rgba(132, 204, 22, 0.2), 0 9px 36px 0 rgba(31, 38, 135, 0.5)"
+              : "0 8px 32px 0 rgba(31, 38, 135, 0.1)",
           }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex items-end space-x-3 p-3 md:p-4">
+          <div className="flex items-center space-x-3 p-3 md:p-4">
             {/* Text Input */}
             <div className="flex-1 relative">
               <textarea
