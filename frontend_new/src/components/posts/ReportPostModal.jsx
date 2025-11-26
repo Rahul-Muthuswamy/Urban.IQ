@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api.js";
 
@@ -17,6 +17,7 @@ export default function ReportPostModal({ postId, onClose, onSuccess }) {
   const [customReason, setCustomReason] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const queryClient = useQueryClient();
 
   const { mutate: submitReport, isPending } = useMutation({
     mutationFn: async (reason) => {
@@ -27,6 +28,15 @@ export default function ReportPostModal({ postId, onClose, onSuccess }) {
       return response.data;
     },
     onSuccess: () => {
+      // Invalidate ALL moderator-related queries so dashboard updates immediately
+      queryClient.invalidateQueries({ queryKey: ["moderatorReports"] });
+      queryClient.invalidateQueries({ queryKey: ["moderatorAnalytics"] });
+      queryClient.invalidateQueries({ queryKey: ["topReportedPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["topReporters"] });
+      // Also refetch immediately for instant updates
+      queryClient.refetchQueries({ queryKey: ["moderatorAnalytics"] });
+      queryClient.refetchQueries({ queryKey: ["topReportedPosts"] });
+      queryClient.refetchQueries({ queryKey: ["topReporters"] });
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -178,6 +188,8 @@ export default function ReportPostModal({ postId, onClose, onSuccess }) {
     </AnimatePresence>
   );
 }
+
+
 
 
 

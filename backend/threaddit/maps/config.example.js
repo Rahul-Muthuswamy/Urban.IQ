@@ -2,7 +2,7 @@
 // Copy this file to config.js and fill in your actual API key
 
 const CONFIG = {
-  AZURE_MAPS_KEY: "YOUR_AZURE_MAPS_API_KEY_HERE"
+  AZURE_MAPS_KEY: "3ieWM5eQAvishfw1JHifWN77CAuTLQlctJbvHqObOYxBVy04YOx2JQQJ99BKACYeBjFgGbFxAAAgAZMP3NO0"
 };
 
 // Make config available globally
