@@ -26,6 +26,8 @@ CORS(
     origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
         "http://localhost:5000",
         "http://127.0.0.1:5000",
         "http://localhost:3000",
@@ -89,6 +91,7 @@ from threaddit.comments.routes import comments
 from threaddit.reactions.routes import reactions
 from threaddit.messages.routes import messages
 from threaddit.auth.routes import auth
+from threaddit.auth.oauth_routes import oauth
 from threaddit.reports.routes import reports
 from threaddit.moderation.routes import moderation
 from threaddit.chatbot.routes import chatbot
@@ -100,6 +103,7 @@ app.register_blueprint(comments)
 app.register_blueprint(reactions)
 app.register_blueprint(messages)
 app.register_blueprint(auth)
+app.register_blueprint(oauth)
 app.register_blueprint(reports)
 app.register_blueprint(moderation)
 app.register_blueprint(chatbot)

@@ -65,6 +65,36 @@ export default function Signin() {
     return () => clearInterval(interval);
   }, []);
 
+  // Check for OAuth callback errors in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get("error");
+    if (error) {
+      setErrors({ general: `OAuth error: ${error}` });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // Handle GitHub OAuth login
+  const handleGitHubLogin = async () => {
+    try {
+      setErrors({});
+      const response = await api.get("/api/auth/github");
+      if (response.data?.auth_url) {
+        // Redirect to GitHub authorization page
+        window.location.href = response.data.auth_url;
+      } else {
+        setErrors({ general: "Failed to initiate GitHub login. Please try again." });
+      }
+    } catch (error) {
+      console.error("GitHub login error:", error);
+      setErrors({ 
+        general: error.response?.data?.message || "Failed to initiate GitHub login. Please try again." 
+      });
+    }
+  };
+
   const { mutate: login, isPending } = useMutation({
     mutationFn: async (data) => {
       const response = await api.post("/api/user/login", {
@@ -163,6 +193,7 @@ export default function Signin() {
           errors={errors}
           onSubmit={handleSubmit}
           isPending={isPending}
+          onGitHubLogin={handleGitHubLogin}
         />
       </motion.div>
     </div>

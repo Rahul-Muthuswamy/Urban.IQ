@@ -18,7 +18,9 @@ class User(db.Model, UserMixin):
     id: int = db.Column(db.Integer, primary_key=True)
     username: str = db.Column(db.Text, unique=True, nullable=False)
     email: str = db.Column(db.Text, unique=True, nullable=False)
-    password_hash: str = db.Column(db.Text, nullable=False)
+    password_hash: str = db.Column(db.Text, nullable=True)  # Nullable for OAuth users
+    github_id: str = db.Column(db.Text, unique=True, nullable=True)  # GitHub user ID
+    oauth_provider: str = db.Column(db.Text, nullable=True)  # e.g., 'github'
     avatar: str = db.Column(db.Text)
     bio: str = db.Column(db.Text)
     first_name: str = db.Column(db.Text)
@@ -42,10 +44,12 @@ class User(db.Model, UserMixin):
     sender = db.relationship("Messages", back_populates="user_sender", foreign_keys="Messages.sender_id")
     receiver = db.relationship("Messages", back_populates="user_receiver", foreign_keys="Messages.receiver_id")
 
-    def __init__(self, username: str, email: str, password_hash: str):
+    def __init__(self, username: str, email: str, password_hash: str = None, github_id: str = None, oauth_provider: str = None):
         self.username = username
         self.email = email
         self.password_hash = password_hash
+        self.github_id = github_id
+        self.oauth_provider = oauth_provider
 
     def get_id(self):
         return str(self.id)
