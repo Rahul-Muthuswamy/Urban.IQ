@@ -35,7 +35,7 @@ export default function CommunitySidebar({ community }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
+          className="glass p-6"
         >
           <h2 className="text-xl font-bold text-gradient mb-4">About</h2>
           <p className="text-gray-700 text-sm leading-relaxed">{community.description}</p>
@@ -70,7 +70,7 @@ export default function CommunitySidebar({ community }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
+          className="glass p-6"
         >
           <h2 className="text-xl font-bold text-gradient mb-4">Moderators</h2>
           <div className="space-y-3">
@@ -97,7 +97,7 @@ export default function CommunitySidebar({ community }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
+        className="glass p-6"
       >
         <h2 className="text-xl font-bold text-gradient mb-4">Quick Links</h2>
         <div className="space-y-2">

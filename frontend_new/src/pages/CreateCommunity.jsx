@@ -79,7 +79,7 @@ export default function CreateCommunity() {
             transition={{ delay: 0.2 }}
             className="text-center mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-3">
+            <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-1 md:leading-relaxed">
               Create Community
             </h1>
             <p className="text-lg text-gray-600">

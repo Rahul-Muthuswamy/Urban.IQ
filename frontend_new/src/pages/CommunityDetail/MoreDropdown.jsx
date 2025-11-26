@@ -89,7 +89,7 @@ export default function MoreDropdown({ community }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-64 glass rounded-xl shadow-glass-lg overflow-hidden z-50 border border-white/20"
+              className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-glass-lg overflow-hidden z-50 border-2 border-black/10"
             >
               {/* More Header */}
               <div className="px-4 py-3 bg-primary/20 text-primary font-semibold border-b border-white/20">

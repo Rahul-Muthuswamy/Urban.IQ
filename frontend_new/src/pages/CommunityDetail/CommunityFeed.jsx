@@ -80,7 +80,7 @@ export default function CommunityFeed({ communityId, initialPosts = [], activeTa
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-lg p-12 text-center border border-gray-200"
+        className="glass p-12 text-center"
       >
         <svg
           className="w-16 h-16 mx-auto text-gray-300 mb-4"

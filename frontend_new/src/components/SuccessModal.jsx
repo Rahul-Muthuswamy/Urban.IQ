@@ -52,7 +52,7 @@ export default function SuccessModal({ community, onClose }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-gray-600 text-center mb-6"
+          className="text-gray-200 text-center mb-6"
         >
           Your community "{community?.subthread?.title || "Community"}" has been created successfully.
         </motion.p>
@@ -67,11 +67,11 @@ export default function SuccessModal({ community, onClose }) {
           >
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Name:</span>
+                <span className="text-gray-900">Name:</span>
                 <span className="font-semibold text-gray-800">{community.subthread.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Title:</span>
+                <span className="text-gray-900">Title:</span>
                 <span className="font-semibold text-gray-800">{community.subthread.title}</span>
               </div>
             </div>

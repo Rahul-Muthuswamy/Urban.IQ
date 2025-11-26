@@ -15,7 +15,7 @@ export default function CommunityTabs({ activeTab, sortBy, onTabChange, onSortCh
   ];
 
   return (
-    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+    <div className="glass p-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Time Tabs */}
         <div className="flex items-center space-x-1 overflow-x-auto">

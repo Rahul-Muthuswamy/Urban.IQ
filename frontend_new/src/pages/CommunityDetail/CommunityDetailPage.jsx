@@ -117,7 +117,8 @@ export default function CommunityDetailPage() {
   const initialPosts = communityData.posts || [];
 
   return (
-    <div className="min-h-screen bg-white pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5  pb-20 md:pb-0">
+      <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-20 md:left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 md:ml-5'></img>
       <Navbar />
 
       <div className="max-w-7xl mx-auto pt-20 md:pt-28 px-4 md:px-6 py-8 md:py-12">
