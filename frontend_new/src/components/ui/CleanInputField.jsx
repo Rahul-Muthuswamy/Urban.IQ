@@ -80,7 +80,7 @@ export default function CleanInputField({
           disabled={disabled}
           autoComplete={type === "email" ? "email" : type === "password" ? "current-password" : type === "text" && id === "username" ? "username" : "off"}
           inputMode={type === "email" ? "email" : type === "tel" ? "tel" : "text"}
-          className={`w-full ${icon ? "pl-12" : "pl-4"} ${showPasswordToggle ? "pr-12" : "pr-4"} py-4 md:py-5 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none text-base md:text-lg transition-all duration-300 border-0 min-h-[48px] touch-manipulation`}
+          className={`w-full ${icon ? "pl-12" : "pl-4"} ${showPasswordToggle ? "pr-12" : "pr-4"} py-4 md:py-5 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none text-base md:text-lg transition-all duration-300 border-0 min-h-[48px] touch-manipulation [&::-ms-reveal]:hidden [&::-webkit-credentials-auto-fill-button]:hidden [&::-webkit-strong-password-auto-fill-button]:hidden`}
           style={{
             WebkitAppearance: "none",
             WebkitTapHighlightColor: "transparent",

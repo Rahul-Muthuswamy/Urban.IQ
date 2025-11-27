@@ -83,7 +83,7 @@ export default function Navbar() {
     { to: "/find", icon: "search", label: "Find" },
     { to: "/chat", icon: "ai", label: "AI Assistant" },
     { to: "/maps", icon: "map", label: "Maps" },
-    { to: "/inbox", icon: "inbox", label: "Inbox" },
+    { to: "/inbox", icon: "inbox", label: "Chat" },
     { to: "/saved", icon: "save", label: "Save" },
   ];
 
@@ -96,7 +96,7 @@ export default function Navbar() {
       ),
       inbox: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 14a2 2 0 0 0 2-2V8h-2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14a2 2 0 0 0 2-2V8H8" />
         </svg>
       ),
       home: (
@@ -195,10 +195,15 @@ export default function Navbar() {
                   ref={findSearchRef}
                   onMouseEnter={() => setIsFindHovered(true)}
                   onMouseLeave={() => {
-                    if (!isFindFocused) {
-                      setIsFindHovered(false);
-                      setShowSearchSuggestions(false);
-                    }
+                    // Always set hover to false when mouse leaves
+                    setIsFindHovered(false);
+                    // If input is not focused or has no content, close everything
+                    setTimeout(() => {
+                      if (!isFindFocused || !searchQuery.trim()) {
+                        setIsFindFocused(false);
+                        setShowSearchSuggestions(false);
+                      }
+                    }, 100);
                   }}
                 >
                   <motion.div
@@ -212,13 +217,13 @@ export default function Navbar() {
                     }}
                   >
                     <motion.div
-                      className={`glass rounded-xl shadow-glass transition-all duration-300 relative overflow-hidden ${
+                      className={`glass rounded-xl shadow-glass transition-all duration-300 relative overflow-hidden flex items-center ${
                         isFindHovered || isFindFocused
                           ? "bg-white/50 shadow-glass-xl"
                           : "bg-transparent"
                       }`}
                       animate={{
-                        paddingLeft: isFindHovered || isFindFocused ? "2.5rem" : "1rem",
+                        paddingLeft: isFindHovered || isFindFocused ? "2rem" : "1rem",
                         paddingRight: isFindHovered || isFindFocused ? "2.5rem" : "1rem",
                         paddingTop: "0.625rem",
                         paddingBottom: "0.625rem",
@@ -250,10 +255,12 @@ export default function Navbar() {
                               }}
                               onBlur={() => {
                                 setTimeout(() => {
-                                  if (!isFindHovered) {
-                                    setIsFindFocused(false);
+                                  setIsFindFocused(false);
+                                  // If not hovering and no search query, close completely
+                                  if (!isFindHovered && !searchQuery.trim()) {
+                                    setShowSearchSuggestions(false);
                                   }
-                                }, 200);
+                                }, 150);
                               }}
                               onKeyDown={(e) => {
                                 if (e.key === "Enter" && searchQuery.trim()) {
@@ -271,14 +278,20 @@ export default function Navbar() {
                                 }
                               }}
                               placeholder="Search communities, posts..."
-                              className="w-full bg-transparent border-none outline-none px-3 py-2.5 text-gray-800 placeholder-gray-400 text-sm"
-                              autoFocus={isFindHovered}
+                              className="w-full bg-transparent border-none outline-none px-3 py-2 text-gray-800 placeholder-gray-400 text-sm"
                             />
                             {searchQuery && (
                               <motion.button
                                 onClick={() => {
                                   setSearchQuery("");
                                   setShowSearchSuggestions(false);
+                                  // Don't immediately close if user might want to type again
+                                  setTimeout(() => {
+                                    if (!searchQuery.trim()) {
+                                      setIsFindHovered(false);
+                                      setIsFindFocused(false);
+                                    }
+                                  }, 100);
                                 }}
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-white/20 transition-colors"
                                 whileHover={{ scale: 1.2, rotate: 90 }}
@@ -337,7 +350,7 @@ export default function Navbar() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                            className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"

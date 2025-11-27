@@ -18,7 +18,7 @@ export default function CommunityTabs({ activeTab, sortBy, onTabChange, onSortCh
     <div className="glass p-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Time Tabs */}
-        <div className="flex items-center space-x-1 overflow-x-auto">
+        <div className="flex items-center space-x-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
