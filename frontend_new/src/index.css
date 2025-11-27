@@ -60,7 +60,7 @@
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(132, 204, 22, 0.2);
+    border: 1.5px solid #00000022;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -214,6 +214,19 @@
 
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(0deg, #333 0%, #666 100%);
+    border-radius: 6px;
+  }
+
+  .update-profile-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .update-profile-scroll::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  .update-profile-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
     border-radius: 6px;
   }
 

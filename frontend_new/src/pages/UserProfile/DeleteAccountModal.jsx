@@ -52,7 +52,7 @@ export default function DeleteAccountModal({ onClose, onSuccess }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="glass rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl border border-red-200"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl border border-red-200"
         >
           <div className="text-center mb-6">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">

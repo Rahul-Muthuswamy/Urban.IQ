@@ -186,7 +186,7 @@ export default function UpdateProfileModal({ user, onClose, profileUsername }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="glass rounded-2xl p-6 md:p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-glass-xl"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-glass-xl update-profile-scroll"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gradient">Update Profile</h2>
@@ -361,7 +361,7 @@ export default function UpdateProfileModal({ user, onClose, profileUsername }) {
                 value={formData.bio}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white/80 text-gray-800"
+                className="w-full px-4 py-3 rounded-xl border-[1.5px] border-[#00000022] focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white/80 text-gray-800"
                 placeholder="Tell us about yourself..."
               />
             </div>
