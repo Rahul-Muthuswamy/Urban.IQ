@@ -267,7 +267,7 @@ export default function ModeratorDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
         <Navbar />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-20">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -276,7 +276,7 @@ export default function ModeratorDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
                   Moderator Dashboard
                 </h1>
                 <p className="text-gray-600">Review and manage reported posts</p>
@@ -454,8 +454,9 @@ export default function ModeratorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 pb-20 md:pb-0">
       <Navbar />
+        <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-20 md:left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 md:ml-5'></img>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -463,12 +464,12 @@ export default function ModeratorDashboard() {
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-orange-600">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Moderator Dashboard
             </h1>
             <motion.button
               onClick={() => setShowReportsView(true)}
-              className="px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center space-x-2"
+              className="px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center space-x-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
