@@ -89,7 +89,7 @@ export default function LiveSuggestions({ query, onSelect, onClose }) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        className="absolute top-full left-0 right-0 mt-2 glass rounded-2xl shadow-glass-xl border border-white/20 overflow-hidden z-50"
+        className="absolute top-full left-0 right-0 mt-2 nav rounded-2xl shadow-glass-xl border border-white/20 overflow-hidden z-50"
       >
         <div className="max-h-96 overflow-y-auto">
           {/* Communities */}

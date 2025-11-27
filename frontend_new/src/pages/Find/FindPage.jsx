@@ -45,11 +45,11 @@ export default function FindPage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3">
             Discover Content
           </h1>
           <p className="text-gray-600 text-lg">
-            Search posts, communities, and users across Threaddit
+            Search posts, communities, and users across Urban.IQ
           </p>
         </motion.div>
 
