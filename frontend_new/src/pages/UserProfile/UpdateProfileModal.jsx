@@ -186,7 +186,7 @@ export default function UpdateProfileModal({ user, onClose, profileUsername }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-glass-xl update-profile-scroll"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-glass-xl"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gradient">Update Profile</h2>
@@ -294,7 +294,7 @@ export default function UpdateProfileModal({ user, onClose, profileUsername }) {
                 error={errors.phone}
                 placeholder="Enter your phone number"
               />
-              <InputField
+              {/* <InputField
                 label="Email"
                 id="email"
                 name="email"
@@ -302,7 +302,7 @@ export default function UpdateProfileModal({ user, onClose, profileUsername }) {
                 value={formData.email}
                 readOnly
                 placeholder="Your email address"
-              />
+              /> */}
               <InputField
                 label="Address Line 1"
                 id="address_line1"

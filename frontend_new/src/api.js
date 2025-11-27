@@ -1,9 +1,8 @@
 import axios from "axios";
 
-// Use relative URL when proxying through Vite, or absolute when running standalone
-const baseURL = import.meta.env.PROD 
-  ? "http://localhost:5000" 
-  : ""; // Empty string uses Vite proxy in development
+// Use environment variable for API base URL, with fallback for development
+const baseURL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.PROD ? "http://localhost:5000" : ""); // Empty string uses Vite proxy in development
 
 const api = axios.create({
   baseURL,

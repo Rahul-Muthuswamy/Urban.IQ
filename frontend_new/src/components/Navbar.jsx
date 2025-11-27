@@ -148,7 +148,7 @@ export default function Navbar() {
           >
             <Link to="/find">
               <motion.button
-                className="glass rounded-xl p-2.5 shadow-glass transition-all duration-300 relative overflow-hidden group text-gray-700 hover:bg-white/40 hover:text-primary"
+                className="nav rounded-xl p-2.5 shadow-glass transition-all duration-300 relative overflow-hidden group text-gray-700 hover:bg-white/40 hover:text-primary"
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 title="Discover Content"
@@ -217,7 +217,7 @@ export default function Navbar() {
                     }}
                   >
                     <motion.div
-                      className={`glass rounded-xl shadow-glass transition-all duration-300 relative overflow-hidden flex items-center ${
+                      className={`nav rounded-xl shadow-glass transition-all duration-300 relative overflow-hidden flex items-center ${
                         isFindHovered || isFindFocused
                           ? "bg-white/50 shadow-glass-xl"
                           : "bg-transparent"
@@ -350,7 +350,7 @@ export default function Navbar() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
-                            className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none"
+                            className="absolute left-3 w-5 h-5 text-gray-800 pointer-events-none"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -409,7 +409,7 @@ export default function Navbar() {
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    `glass rounded-xl pl-2 pr-4 py-2.5 flex items-center space-x-2 shadow-glass transition-all duration-300 relative overflow-hidden ${
+                    `nav rounded-xl pl-2 pr-4 py-2.5 flex items-center space-x-2 shadow-glass transition-all duration-300 relative overflow-hidden ${
                       isActive
                         ? "bg-primary/30 text-primary shadow-glow"
                         : "text-gray-700 hover:bg-white/40 hover:text-primary"
@@ -501,7 +501,7 @@ export default function Navbar() {
             <>
               <motion.button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="glass rounded-xl pl-1.5 pr-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glow transition-all duration-300 relative overflow-hidden group"
+                className="nav rounded-xl pl-1.5 pr-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glow transition-all duration-300 relative overflow-hidden group"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -563,7 +563,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 glass rounded-xl shadow-glass-lg overflow-hidden z-50"
+                    className="absolute right-0 mt-2 w-48 nav rounded-xl shadow-glass-lg overflow-hidden z-50"
                   >
                     <Link
                       to="/dashboard"
@@ -601,7 +601,7 @@ export default function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="glass rounded-xl px-4 py-2.5 bg-gradient-primary text-white font-semibold shadow-glass-lg hover:shadow-glow transition-all duration-300 flex items-center"
+              className="nav rounded-xl px-4 py-2.5 bg-gradient-primary text-white font-semibold shadow-glass-lg hover:shadow-glow transition-all duration-300 flex items-center"
             >
               Sign In
             </Link>
@@ -614,13 +614,13 @@ export default function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="md:hidden fixed top-0 left-0 right-0 z-50 glass backdrop-blur-xl border-b border-white/20"
+        className="md:hidden fixed top-0 left-0 right-0 z-50 nav backdrop-blur-xl border-b border-white/20"
       >
         <div className="px-4 h-16 flex items-center justify-between">
           {/* Hamburger Menu Button */}
           <motion.button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="glass rounded-lg p-2"
+            className="nav rounded-lg p-2"
             whileTap={{ scale: 0.9 }}
           >
             {showMobileMenu ? (
@@ -656,7 +656,7 @@ export default function Navbar() {
                   <Link
                     to="/find"
                     onClick={() => setShowMobileMenu(false)}
-                    className="glass rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass transition-all duration-300 bg-primary/20 text-primary hover:bg-primary/30"
+                    className="nav rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass transition-all duration-300 bg-primary/20 text-primary hover:bg-primary/30"
                   >
                     <motion.div
                       animate={{
@@ -688,7 +688,7 @@ export default function Navbar() {
                       to={item.to}
                       onClick={() => setShowMobileMenu(false)}
                       className={({ isActive }) =>
-                        `glass rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass transition-all duration-300 ${
+                        `nav rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass transition-all duration-300 ${
                           isActive
                             ? "bg-primary/30 text-primary"
                             : "text-gray-700 hover:bg-white/40"
@@ -724,7 +724,7 @@ export default function Navbar() {
                     <Link
                       to="/dashboard"
                       onClick={() => setShowMobileMenu(false)}
-                      className="glass rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all"
+                      className="nav rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all"
                     >
                       <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -734,7 +734,7 @@ export default function Navbar() {
                     <Link
                       to="/profile"
                       onClick={() => setShowMobileMenu(false)}
-                      className="glass rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all"
+                      className="nav rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all"
                     >
                       <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -746,14 +746,14 @@ export default function Navbar() {
                         handleLogout();
                         setShowMobileMenu(false);
                       }}
-                      className="w-full glass rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all text-left"
+                      className="w-full nav rounded-xl px-4 py-3 flex items-center space-x-3 shadow-glass hover:bg-white/40 transition-all text-left"
                     >
                       <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                       <span className="font-medium text-gray-700">Logout</span>
                     </button>
-                    <div className="glass rounded-xl px-4 py-3 flex items-center space-x-3">
+                    <div className="nav rounded-xl px-4 py-3 flex items-center space-x-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
                         {user?.username?.[0]?.toUpperCase() || "U"}
                       </div>
@@ -773,7 +773,7 @@ export default function Navbar() {
                     <Link
                       to="/login"
                       onClick={() => setShowMobileMenu(false)}
-                      className="glass rounded-xl px-4 py-3 bg-gradient-primary text-white font-semibold shadow-glass-lg flex items-center justify-center"
+                      className="nav rounded-xl px-4 py-3 bg-gradient-primary text-white font-semibold shadow-glass-lg flex items-center justify-center"
                     >
                       Sign In
                     </Link>
@@ -790,7 +790,7 @@ export default function Navbar() {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass backdrop-blur-xl border-t border-white/20 safe-area-inset-bottom"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 nav backdrop-blur-xl border-t border-white/20 safe-area-inset-bottom"
       >
         <div className="px-2 py-2 flex items-center justify-around">
           {navItems.slice(0, 5).map((item) => (
