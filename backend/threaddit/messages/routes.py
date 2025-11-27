@@ -125,6 +125,10 @@ def get_messages(user_name):
         if not other_user:
             return jsonify({"message": "User not found"}), 404
         
+        # Prevent self-messaging
+        if other_user.id == current_user.id:
+            return jsonify({"message": "Cannot get messages with yourself"}), 400
+        
         # Get all messages between current user and other user
         conversation_messages = Messages.query.filter(
             or_(
@@ -134,22 +138,31 @@ def get_messages(user_name):
         ).order_by(Messages.created_at.asc()).all()
         
         # Mark messages as seen (only messages sent to current user)
+        has_unread = False
         for message in conversation_messages:
             if message.receiver_id == current_user.id and not message.seen:
                 message.seen = True
                 message.seen_at = func.now()
+                has_unread = True
         
-        db.session.commit()
+        if has_unread:
+            db.session.commit()
         
         # Format messages for response
         messages_list = []
         for msg in conversation_messages:
-            msg_dict = msg.as_dict()
-            msg_dict["is_sent"] = msg.sender_id == current_user.id
-            msg_dict["created_at"] = msg.created_at.isoformat() if msg.created_at else None
-            msg_dict["seen_at"] = msg.seen_at.isoformat() if msg.seen_at else None
-            messages_list.append(msg_dict)
+            try:
+                msg_dict = msg.as_dict()
+                msg_dict["is_sent"] = msg.sender_id == current_user.id
+                msg_dict["created_at"] = msg.created_at.isoformat() if msg.created_at else None
+                msg_dict["seen_at"] = msg.seen_at.isoformat() if msg.seen_at else None
+                messages_list.append(msg_dict)
+            except Exception as dict_error:
+                print(f"[Messages] Error converting message {msg.id} to dict: {str(dict_error)}")
+                # Skip this message if it can't be serialized
+                continue
         
+        # Return empty list if no messages (new conversation)
         return jsonify(messages_list), 200
     except Exception as e:
         print(f"[Messages] Error fetching messages: {str(e)}")

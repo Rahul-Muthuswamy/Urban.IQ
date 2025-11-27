@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api.js";
 import LiveSuggestions from "../pages/Find/LiveSuggestions.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const findSearchRef = useRef(null);
+
+  // Use custom auth hook for authentication state
+  const { user, isLoading: userLoading, isAuthenticated } = useAuth();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -40,23 +44,6 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserMenu, showMobileMenu, isFindHovered, isFindFocused]);
-
-  // Fetch current user
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: async () => {
-      try {
-        const response = await api.get("/api/user");
-        return response.data;
-      } catch {
-        return null;
-      }
-    },
-    retry: false,
-  });
-
-  // Calculate authentication status (must be defined before use)
-  const isAuthenticated = !!user && !userLoading;
 
   // Fetch unread messages count (only when authenticated)
   const { data: unreadData } = useQuery({

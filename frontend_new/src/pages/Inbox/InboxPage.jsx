@@ -11,6 +11,7 @@ export default function InboxPage() {
   const queryClient = useQueryClient();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState("conversations"); // "conversations" or "new"
 
   // Check authentication
   const { data: user, isLoading: userLoading, error: userError } = useQuery({
@@ -48,6 +49,17 @@ export default function InboxPage() {
     refetchInterval: 5000, // Poll every 5 seconds for new messages
   });
 
+  // Fetch all users for new conversations
+  const { data: allUsersData, isLoading: allUsersLoading } = useQuery({
+    queryKey: ["allUsers"],
+    queryFn: async () => {
+      const response = await api.get("/api/users/all");
+      return response.data;
+    },
+    enabled: !!user,
+    retry: 1,
+  });
+
   // Fetch unread count
   const { data: unreadData } = useQuery({
     queryKey: ["unreadCount"],
@@ -67,10 +79,30 @@ export default function InboxPage() {
     }
   }, [user, userLoading, userError, navigate]);
 
+  // Get usernames of users we already have conversations with
+  const existingConversationUsernames = new Set(
+    inboxData?.map((conv) => conv.contact?.username).filter(Boolean) || []
+  );
+
   // Filter conversations by search
   const filteredConversations = inboxData?.filter((conv) =>
     conv.contact?.username?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
+
+  // Filter users by search and exclude those we already have conversations with
+  const filteredUsers = allUsersData?.filter((user) => {
+    const matchesSearch = user.username?.toLowerCase().includes(searchQuery.toLowerCase());
+    const hasConversation = existingConversationUsernames.has(user.username);
+    // In "new" mode, show users without conversations. In "conversations" mode, show all users.
+    return matchesSearch && (viewMode === "new" ? !hasConversation : true);
+  }) || [];
+
+  // Handle starting a new conversation
+  const handleStartConversation = (username) => {
+    setSelectedConversation(username);
+    setViewMode("conversations"); // Switch back to conversations view
+    setSearchQuery(""); // Clear search
+  };
 
   // Show loading while checking auth
   if (userLoading) {
@@ -119,11 +151,41 @@ export default function InboxPage() {
                 )}
               </div>
 
+              {/* View Mode Toggle */}
+              <div className="flex gap-2 mb-4 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => {
+                    setViewMode("conversations");
+                    setSearchQuery("");
+                  }}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-semibold transition-all ${
+                    viewMode === "conversations"
+                      ? "bg-white text-primary shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  Conversations
+                </button>
+                <button
+                  onClick={() => {
+                    setViewMode("new");
+                    setSearchQuery("");
+                  }}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-semibold transition-all ${
+                    viewMode === "new"
+                      ? "bg-white text-primary shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  New Chat
+                </button>
+              </div>
+
               {/* Search */}
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search conversations..."
+                  placeholder={viewMode === "conversations" ? "Search conversations..." : "Search users..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-4 py-2 pl-10 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white/80"
@@ -144,87 +206,170 @@ export default function InboxPage() {
               </div>
             </div>
 
-            {/* Conversations List */}
+            {/* Conversations List or Users List */}
             <div className="flex-1 overflow-y-auto">
-              {inboxLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : filteredConversations.length > 0 ? (
-                <div className="divide-y divide-gray-200">
-                  {filteredConversations.map((conversation, index) => (
-                    <motion.button
-                      key={conversation.message_id || index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      onClick={() => setSelectedConversation(conversation.contact?.username)}
-                      className={`w-full p-4 text-left hover:bg-white/40 transition-colors ${
-                        selectedConversation === conversation.contact?.username
-                          ? "bg-primary/10 border-l-4 border-primary"
-                          : ""
-                      }`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        {/* Avatar */}
-                        {conversation.contact?.avatar ? (
-                          <img
-                            src={conversation.contact.avatar}
-                            alt={conversation.contact.username}
-                            className="w-12 h-12 rounded-full flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                            {conversation.contact?.username?.[0]?.toUpperCase() || "U"}
-                          </div>
-                        )}
+              {viewMode === "conversations" ? (
+                // Show existing conversations
+                inboxLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : filteredConversations.length > 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {filteredConversations.map((conversation, index) => (
+                      <motion.button
+                        key={conversation.message_id || index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => setSelectedConversation(conversation.contact?.username)}
+                        className={`w-full p-4 text-left hover:bg-white/40 transition-colors ${
+                          selectedConversation === conversation.contact?.username
+                            ? "bg-primary/10 border-l-4 border-primary"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          {/* Avatar */}
+                          {conversation.contact?.avatar ? (
+                            <img
+                              src={conversation.contact.avatar}
+                              alt={conversation.contact.username}
+                              className="w-12 h-12 rounded-full flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                              {conversation.contact?.username?.[0]?.toUpperCase() || "U"}
+                            </div>
+                          )}
 
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-gray-800 truncate">
-                              {conversation.contact?.username || "Unknown User"}
-                            </h3>
-                            {conversation.latest_message?.created_at && (
-                              <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
-                                {new Date(conversation.latest_message.created_at).toLocaleDateString()}
-                              </span>
-                            )}
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <h3 className="font-semibold text-gray-800 truncate">
+                                {conversation.contact?.username || "Unknown User"}
+                              </h3>
+                              {conversation.latest_message?.created_at && (
+                                <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                                  {new Date(conversation.latest_message.created_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm text-gray-600 truncate">
+                                {conversation.latest_message?.is_from_me ? "You: " : ""}
+                                {conversation.latest_message?.content || "No messages"}
+                              </p>
+                              {conversation.unread_count > 0 && (
+                                <span className="ml-2 px-2 py-0.5 bg-primary text-white text-xs font-semibold rounded-full flex-shrink-0">
+                                  {conversation.unread_count}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-600 truncate">
-                              {conversation.latest_message?.is_from_me ? "You: " : ""}
-                              {conversation.latest_message?.content || "No messages"}
-                            </p>
-                            {conversation.unread_count > 0 && (
-                              <span className="ml-2 px-2 py-0.5 bg-primary text-white text-xs font-semibold rounded-full flex-shrink-0">
-                                {conversation.unread_count}
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    <svg
+                      className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className="text-lg font-medium mb-2">No conversations yet</p>
+                    <p className="text-sm">Start a conversation by messaging a user!</p>
+                    <button
+                      onClick={() => setViewMode("new")}
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                    >
+                      Start New Chat
+                    </button>
+                  </div>
+                )
+              ) : (
+                // Show available users for new conversations
+                allUsersLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : filteredUsers.length > 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {filteredUsers.map((user, index) => (
+                      <motion.button
+                        key={user.id || index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        onClick={() => handleStartConversation(user.username)}
+                        className="w-full p-4 text-left hover:bg-white/40 transition-colors"
+                      >
+                        <div className="flex items-center space-x-3">
+                          {/* Avatar */}
+                          {user.avatar ? (
+                            <img
+                              src={user.avatar}
+                              alt={user.username}
+                              className="w-12 h-12 rounded-full flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                              {user.username?.[0]?.toUpperCase() || "U"}
+                            </div>
+                          )}
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <h3 className="font-semibold text-gray-800 truncate">
+                                {user.username || "Unknown User"}
+                              </h3>
+                              <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full flex-shrink-0 ml-2">
+                                New
                               </span>
+                            </div>
+                            {user.bio && (
+                              <p className="text-sm text-gray-600 truncate">{user.bio}</p>
                             )}
                           </div>
                         </div>
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <svg
-                    className="w-16 h-16 mx-auto text-gray-300 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-lg font-medium mb-2">No conversations yet</p>
-                  <p className="text-sm">Start a conversation by messaging a user!</p>
-                </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    <svg
+                      className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
+                    </svg>
+                    <p className="text-lg font-medium mb-2">
+                      {searchQuery ? "No users found" : "All users have conversations"}
+                    </p>
+                    <p className="text-sm">
+                      {searchQuery
+                        ? "Try a different search term"
+                        : "You've started conversations with everyone!"}
+                    </p>
+                  </div>
+                )
               )}
             </div>
           </motion.div>
@@ -243,8 +388,13 @@ export default function InboxPage() {
                   contactUsername={selectedConversation}
                   onBack={() => setSelectedConversation(null)}
                   onMessageSent={() => {
+                    // Refresh inbox to show new conversation
                     refetchInbox();
+                    // Switch to conversations view if we were in "new" mode
+                    setViewMode("conversations");
+                    // Invalidate all related queries
                     queryClient.invalidateQueries({ queryKey: ["unreadCount"] });
+                    queryClient.invalidateQueries({ queryKey: ["allUsers"] });
                   }}
                 />
               </motion.div>

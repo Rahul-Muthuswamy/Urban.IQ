@@ -51,12 +51,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config["SECRET_KEY"] = SECRET_KEY
 
 
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
-app.config["SESSION_COOKIE_SECURE"] = False 
+# Session cookie configuration for cross-origin requests
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Use "Lax" for localhost, "None" for production with HTTPS
+app.config["SESSION_COOKIE_SECURE"] = False  # Set to True in production with HTTPS
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_NAME"] = "session"  
-app.config["SESSION_COOKIE_DOMAIN"] = None  
-app.config["PERMANENT_SESSION_LIFETIME"] = 86400  
+app.config["SESSION_COOKIE_NAME"] = "session"
+app.config["SESSION_COOKIE_DOMAIN"] = None
+app.config["PERMANENT_SESSION_LIFETIME"] = 86400  # 24 hours  
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)

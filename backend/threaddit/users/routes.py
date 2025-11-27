@@ -136,6 +136,35 @@ def users_get():
     return jsonify(User.get_all()), 200
 
 
+@user.route("/users/all", methods=["GET"])
+@login_required
+def get_all_users_for_inbox():
+    """
+    Get all users (excluding current user) for inbox conversation selection.
+    Returns users with basic info: id, username, avatar, bio.
+    """
+    try:
+        # Get all users except current user
+        all_users = User.query.filter(User.id != current_user.id).order_by(User.username.asc()).all()
+        
+        # Format user data for inbox
+        users_list = []
+        for user in all_users:
+            users_list.append({
+                "id": user.id,
+                "username": user.username,
+                "avatar": user.avatar,
+                "bio": user.bio,
+            })
+        
+        return jsonify(users_list), 200
+    except Exception as e:
+        print(f"[Users] Error fetching all users: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Error fetching users: {str(e)}"}), 500
+
+
 @user.route("/user/search/<search>")
 @login_required
 def get_user(search):
