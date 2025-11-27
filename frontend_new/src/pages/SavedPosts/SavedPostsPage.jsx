@@ -12,25 +12,35 @@ export default function SavedPostsPage() {
   const navigate = useNavigate();
 
   // Check authentication
-  const { data: user, isLoading: userLoading } = useQuery({
+  const { data: user, isLoading: userLoading, error: userError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       try {
         const response = await api.get("/api/user");
         return response.data;
-      } catch {
-        return null;
+      } catch (error) {
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
       }
     },
-    retry: false,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 0,
+    cacheTime: 0,
   });
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!userLoading && !user) {
+    if (!userLoading && !user && userError?.response?.status === 401) {
       navigate("/login", { replace: true });
     }
-  }, [user, userLoading, navigate]);
+  }, [user, userLoading, userError, navigate]);
 
   // Fetch saved posts
   const {

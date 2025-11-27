@@ -13,25 +13,35 @@ export default function CreateCommunity() {
   const [createdCommunity, setCreatedCommunity] = useState(null);
 
   // Check authentication
-  const { data: user, isLoading: userLoading } = useQuery({
+  const { data: user, isLoading: userLoading, error: userError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       try {
         const response = await api.get("/api/user");
         return response.data;
-      } catch {
-        return null;
+      } catch (error) {
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
       }
     },
-    retry: false,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 0,
+    cacheTime: 0,
   });
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (!userLoading && !user) {
+    if (!userLoading && !user && userError?.response?.status === 401) {
       navigate("/login", { replace: true });
     }
-  }, [user, userLoading, navigate]);
+  }, [user, userLoading, userError, navigate]);
 
   const handleSuccess = (communityData) => {
     setCreatedCommunity(communityData);

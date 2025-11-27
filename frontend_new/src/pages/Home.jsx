@@ -17,25 +17,38 @@ export default function Home() {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
 
   // Check authentication
-  const { data: user, isLoading: userLoading } = useQuery({
+  const { data: user, isLoading: userLoading, error: userError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       try {
         const response = await api.get("/api/user");
         return response.data;
-      } catch {
-        return null;
+      } catch (error) {
+        // Only return null if it's a 401, otherwise throw to retry
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
       }
     },
-    retry: false,
+    retry: (failureCount, error) => {
+      // Don't retry on 401 (unauthorized)
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
+    staleTime: 0, // Always refetch on mount
+    cacheTime: 0, // Don't cache
   });
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated (only after loading is complete)
   useEffect(() => {
-    if (!userLoading && !user) {
+    if (!userLoading && !user && userError?.response?.status === 401) {
       navigate("/login", { replace: true });
     }
-  }, [user, userLoading, navigate]);
+  }, [user, userLoading, userError, navigate]);
 
   // Fetch posts based on selected community or feed
   const {

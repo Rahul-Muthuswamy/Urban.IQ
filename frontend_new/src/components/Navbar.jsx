@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api.js";
 import LiveSuggestions from "../pages/Find/LiveSuggestions.jsx";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,7 +42,7 @@ export default function Navbar() {
   }, [showUserMenu, showMobileMenu, isFindHovered, isFindFocused]);
 
   // Fetch current user
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       try {
@@ -54,15 +55,39 @@ export default function Navbar() {
     retry: false,
   });
 
-  const isAuthenticated = !!user;
+  // Calculate authentication status (must be defined before use)
+  const isAuthenticated = !!user && !userLoading;
+
+  // Fetch unread messages count (only when authenticated)
+  const { data: unreadData } = useQuery({
+    queryKey: ["unreadCount"],
+    queryFn: async () => {
+      try {
+        const response = await api.get("/api/messages/unread/count");
+        return response.data;
+      } catch {
+        return { unread_count: 0 };
+      }
+    },
+    enabled: isAuthenticated,
+    retry: 1,
+    refetchInterval: 15000, // Poll every 15 seconds
+  });
 
   const handleLogout = async () => {
     try {
       await api.get("/api/user/logout");
       localStorage.removeItem("user");
+      // Invalidate all queries to clear cache
+      queryClient.clear();
+      // Redirect to login
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if logout fails, clear local storage and redirect
+      localStorage.removeItem("user");
+      queryClient.clear();
+      window.location.href = "/login";
     }
   };
 
@@ -292,16 +317,26 @@ export default function Navbar() {
                         }}
                         transition={{ duration: 0.2 }}
                       >
-                        <motion.div
-                          className="relative z-10"
-                          whileHover={{
-                            scale: 1.2,
-                            rotate: [0, -10, 10, 0],
-                            transition: { duration: 0.3 },
-                          }}
-                        >
-                          {getIcon(item.icon)}
-                        </motion.div>
+                      <motion.div
+                        className="relative z-10"
+                        whileHover={{
+                          scale: 1.2,
+                          rotate: [0, -10, 10, 0],
+                          transition: { duration: 0.3 },
+                        }}
+                      >
+                        {getIcon(item.icon)}
+                        {/* Unread count badge for inbox */}
+                        {item.icon === "inbox" && unreadData && unreadData.unread_count > 0 && (
+                          <motion.span
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                          >
+                            {unreadData.unread_count > 9 ? "9+" : unreadData.unread_count}
+                          </motion.span>
+                        )}
+                      </motion.div>
                         <motion.span className="font-medium text-sm relative z-10">
                           {item.label}
                         </motion.span>
@@ -411,7 +446,19 @@ export default function Navbar() {
                           transition: { duration: 0.3 },
                         }}
                       >
-                        {getIcon(item.icon)}
+                        <div className="relative">
+                          {getIcon(item.icon)}
+                          {/* Unread count badge for inbox */}
+                          {item.icon === "inbox" && unreadData && unreadData.unread_count > 0 && (
+                            <motion.span
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center z-20"
+                            >
+                              {unreadData.unread_count > 9 ? "9+" : unreadData.unread_count}
+                            </motion.span>
+                          )}
+                        </div>
                       </motion.div>
                       <motion.span
                         className="font-medium text-sm relative z-10"
@@ -648,7 +695,19 @@ export default function Navbar() {
                         }`
                       }
                     >
-                      {getIcon(item.icon)}
+                      <div className="relative">
+                        {getIcon(item.icon)}
+                        {/* Unread count badge for inbox */}
+                        {item.icon === "inbox" && unreadData && unreadData.unread_count > 0 && (
+                          <motion.span
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center z-20"
+                          >
+                            {unreadData.unread_count > 9 ? "9+" : unreadData.unread_count}
+                          </motion.span>
+                        )}
+                      </div>
                       <span className="font-medium">{item.label}</span>
                     </NavLink>
                   </motion.div>
@@ -751,8 +810,19 @@ export default function Navbar() {
                   <motion.div
                     animate={{ scale: isActive ? 1.1 : 1 }}
                     transition={{ duration: 0.2 }}
+                    className="relative"
                   >
                     {getIcon(item.icon)}
+                    {/* Unread count badge for inbox */}
+                    {item.icon === "inbox" && unreadData && unreadData.unread_count > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center z-20"
+                      >
+                        {unreadData.unread_count > 9 ? "9+" : unreadData.unread_count}
+                      </motion.span>
+                    )}
                   </motion.div>
                   <span className="text-xs font-medium">{item.label}</span>
                 </>

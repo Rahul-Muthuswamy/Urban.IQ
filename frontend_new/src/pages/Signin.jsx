@@ -65,7 +65,7 @@ export default function Signin() {
     return () => clearInterval(interval);
   }, []);
 
-  // Check for OAuth callback errors in URL
+  // Check for OAuth callback errors or success in URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const error = urlParams.get("error");
@@ -73,8 +73,14 @@ export default function Signin() {
       setErrors({ general: `OAuth error: ${error}` });
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      // Check if user is logged in (OAuth success)
+      // If redirected from OAuth callback and user is authenticated, go to home
+      if (currentUser) {
+        navigate("/home", { replace: true });
+      }
     }
-  }, []);
+  }, [currentUser, navigate]);
 
   // Handle GitHub OAuth login
   const handleGitHubLogin = async () => {
@@ -103,20 +109,27 @@ export default function Signin() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Store user data
-      localStorage.setItem("user", JSON.stringify(data));
-      // Invalidate and refetch user query
+      if (data) {
+        localStorage.setItem("user", JSON.stringify(data));
+      }
+      // Invalidate and refetch user query, then navigate
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-      // Navigate to home page
-      navigate("/home", { replace: true });
+      queryClient.setQueryData(["currentUser"], data);
+      // Small delay to ensure query is updated
+      setTimeout(() => {
+        navigate("/home", { replace: true });
+      }, 100);
     },
     onError: (error) => {
       // Handle 409 - Already logged in (treat as success)
       if (error.response?.status === 409) {
         // User is already logged in, invalidate query and redirect to home
         queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-        navigate("/home", { replace: true });
+        setTimeout(() => {
+          navigate("/home", { replace: true });
+        }, 100);
         return;
       }
       

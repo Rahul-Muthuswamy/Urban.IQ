@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api.js";
@@ -26,6 +26,7 @@ const carouselSlides = [
 
 export default function Signup() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -83,11 +84,17 @@ export default function Signup() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
-      // Store user data
-      localStorage.setItem("user", JSON.stringify(data));
-      // Navigate to home or login page
-      navigate("/login");
+    onSuccess: async (data) => {
+      // Store user data if available
+      if (data) {
+        localStorage.setItem("user", JSON.stringify(data));
+      }
+      // Invalidate user query
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      // Navigate to login page (user needs to sign in after registration)
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 100);
     },
     onError: (error) => {
       if (error.response?.data?.errors) {

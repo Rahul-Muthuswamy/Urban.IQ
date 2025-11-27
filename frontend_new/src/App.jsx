@@ -12,6 +12,7 @@ import MapsPage from "./pages/Maps/MapsPage.jsx";
 import SavedPostsPage from "./pages/SavedPosts/SavedPostsPage.jsx";
 import FindPage from "./pages/Find/FindPage.jsx";
 import ModeratorDashboard from "./pages/Moderator/ModeratorDashboard.jsx";
+import InboxPage from "./pages/Inbox/InboxPage.jsx";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/maps" element={<MapsPage />} />
         <Route path="/saved" element={<SavedPostsPage />} />
         <Route path="/find" element={<FindPage />} />
+        <Route path="/inbox" element={<InboxPage />} />
         <Route path="/moderator/dashboard" element={<ModeratorDashboard />} />
         <Route path="/" element={<Navigate to="/signup" replace />} />
       </Routes>
