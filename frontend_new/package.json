@@ -15,6 +15,8 @@
     "@tanstack/react-query": "^5.45.0",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.10",
+    "lucide-react": "^0.555.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.47.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1"
@@ -33,4 +35,3 @@
     "vite": "^5.3.1"
   }
 }
-

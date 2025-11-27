@@ -20,7 +20,7 @@ export default function CleanAuthCard({ children, className = "", delay = 0 }) {
         duration: prefersReducedMotion ? 0.3 : 0.7,
         ease: [0.2, 0.9, 0.2, 1],
       }}
-      className={`relative rounded-xl md:rounded-2xl bg-white shadow-lg border-2 p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col w-full max-w-full ${className}`}
+      className={`relative rounded-xl md:rounded-2xl bg-white shadow-lg border-2 px-6 sm:px-8 md:px-10 lg:px-12 py-1 sm:py-2 md:py-4 lg:py-6 flex flex-col w-full max-w-full ${className}`}
       style={{
         WebkitOverflowScrolling: "touch",
         overscrollBehavior: "contain",

@@ -80,7 +80,7 @@ export default function CleanInputField({
           disabled={disabled}
           autoComplete={type === "email" ? "email" : type === "password" ? "current-password" : type === "text" && id === "username" ? "username" : "off"}
           inputMode={type === "email" ? "email" : type === "tel" ? "tel" : "text"}
-          className={`w-full ${icon ? "pl-12" : "pl-4"} ${showPasswordToggle ? "pr-12" : "pr-4"} py-4 md:py-5 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none text-base md:text-lg transition-all duration-300 border-0 min-h-[48px] touch-manipulation [&::-ms-reveal]:hidden [&::-webkit-credentials-auto-fill-button]:hidden [&::-webkit-strong-password-auto-fill-button]:hidden`}
+          className={`w-full ${icon ? "pl-12" : "pl-4"} ${showPasswordToggle ? "pr-12" : "pr-4"} py-3 md:py-4 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none text-base md:text-lg transition-all duration-300 border-0 min-h-[48px] touch-manipulation`}
           style={{
             WebkitAppearance: "none",
             WebkitTapHighlightColor: "transparent",
@@ -94,7 +94,7 @@ export default function CleanInputField({
             type="button"
             onClick={onTogglePassword}
             onMouseDown={(e) => e.preventDefault()}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
             aria-label={showPassword ? "Hide password" : "Show password"}
             aria-pressed={showPassword}
             style={{
