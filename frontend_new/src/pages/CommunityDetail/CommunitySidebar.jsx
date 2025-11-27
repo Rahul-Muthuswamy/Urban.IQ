@@ -29,26 +29,13 @@ export default function CommunitySidebar({ community }) {
 
   return (
     <div className="space-y-6">
-      {/* About Section */}
-      {community.description && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass p-6"
-        >
-          <h2 className="text-xl font-bold text-gradient mb-4">About</h2>
-          <p className="text-gray-700 text-sm leading-relaxed">{community.description}</p>
-        </motion.div>
-      )}
-
       {/* Rules Section */}
       {rules && rules.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
+          className="glass-comm p-6"
         >
           <h2 className="text-xl font-bold text-gradient mb-4">Rules</h2>
           <ol className="space-y-3">
@@ -70,7 +57,7 @@ export default function CommunitySidebar({ community }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="glass p-6"
+          className="glass-comm p-6"
         >
           <h2 className="text-xl font-bold text-gradient mb-4">Moderators</h2>
           <div className="space-y-3">
@@ -97,7 +84,7 @@ export default function CommunitySidebar({ community }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="glass p-6"
+        className="glass-comm p-6"
       >
         <h2 className="text-xl font-bold text-gradient mb-4">Quick Links</h2>
         <div className="space-y-2">

@@ -91,7 +91,7 @@ export default function CommunityHeader({ community, onJoinChange }) {
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-200 shadow-md"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-3xl font-bold shadow-md">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-3xl font-bold shadow-md">
                 {community.name?.replace("t/", "").charAt(0).toUpperCase() || "C"}
               </div>
             )}
@@ -157,7 +157,7 @@ export default function CommunityHeader({ community, onJoinChange }) {
               className={`px-8 py-2.5 rounded-lg font-semibold shadow-md transition-all duration-300 ${
                 isSubscribed
                   ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  : "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-gradient-to-br from-primary to-accent text-white"
               }`}
               whileHover={{ scale: isJoining ? 1 : 1.05 }}
               whileTap={{ scale: isJoining ? 1 : 0.95 }}
