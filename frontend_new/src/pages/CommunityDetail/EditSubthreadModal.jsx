@@ -116,7 +116,7 @@ export default function EditSubthreadModal({ community, onClose, onSuccess }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="glass rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-glass-xl border border-white/20"
+          className="bg-white rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-glass-xl border border-white/20"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Edit Subthread</h2>
@@ -217,7 +217,7 @@ export default function EditSubthreadModal({ community, onClose, onSuccess }) {
             </div>
 
             {/* Banner Upload */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Banner
               </label>
@@ -239,7 +239,7 @@ export default function EditSubthreadModal({ community, onClose, onSuccess }) {
                   />
                 </label>
               </div>
-            </div>
+            </div> */}
 
             {/* Error Message */}
             {errors.submit && (
