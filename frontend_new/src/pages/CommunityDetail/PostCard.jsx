@@ -33,7 +33,7 @@ export default function PostCard({ post, index }) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
-      className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+      className="glass p-4 hover:shadow-md transition-all duration-300"
     >
       <div className="flex flex-col md:flex-row gap-6">
         {/* Vote Section */}

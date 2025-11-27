@@ -116,7 +116,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setSortBy("top")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 sortBy === "top"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -126,7 +126,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setSortBy("hot")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 sortBy === "hot"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -136,7 +136,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setSortBy("new")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 sortBy === "new"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -147,7 +147,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setDuration("day")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 duration === "day"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -157,7 +157,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setDuration("week")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 duration === "week"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -167,7 +167,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setDuration("month")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 duration === "month"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >
@@ -177,7 +177,7 @@ export default function UserProfileContent({ user }) {
               onClick={() => setDuration("alltime")}
               className={`px-4 py-2 rounded-xl transition-colors ${
                 duration === "alltime"
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-br from-primary to-accent text-white"
                   : "bg-white/50 text-gray-700 hover:bg-white/70"
               }`}
             >

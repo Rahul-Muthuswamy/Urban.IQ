@@ -92,12 +92,12 @@ export default function Navbar() {
   };
 
   const navItems = [
-    { to: "/saved", icon: "save", label: "Save" },
-    { to: "/inbox", icon: "inbox", label: "Inbox" },
     { to: "/home", icon: "home", label: "Home" },
     { to: "/find", icon: "search", label: "Find" },
     { to: "/chat", icon: "ai", label: "AI Assistant" },
     { to: "/maps", icon: "map", label: "Maps" },
+    { to: "/inbox", icon: "inbox", label: "Inbox" },
+    { to: "/saved", icon: "save", label: "Save" },
   ];
 
   const getIcon = (iconName) => {
@@ -129,7 +129,7 @@ export default function Navbar() {
       ),
       ai: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}/><path d="M20 2v4" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}/><path d="M22 4h-4" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}/><circle cx="4" cy="20" r="2" strokeWidth={2}/>
         </svg>
       ),
       map: (
@@ -148,7 +148,7 @@ export default function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex fixed top-4 left-4 right-4 z-50 items-center justify-between gap-3"
+        className="hidden md:flex fixed top-4 left-36 right-4 z-50 items-center justify-between gap-3"
       >
         {/* Navigation Items as Individual Islands - Centered */}
         <div className="flex items-center gap-3 flex-1 justify-center">
@@ -409,7 +409,7 @@ export default function Navbar() {
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    `glass rounded-xl px-4 py-2.5 flex items-center space-x-2 shadow-glass transition-all duration-300 relative overflow-hidden ${
+                    `glass rounded-xl pl-2 pr-4 py-2.5 flex items-center space-x-2 shadow-glass transition-all duration-300 relative overflow-hidden ${
                       isActive
                         ? "bg-primary/30 text-primary shadow-glow"
                         : "text-gray-700 hover:bg-white/40 hover:text-primary"
@@ -501,7 +501,7 @@ export default function Navbar() {
             <>
               <motion.button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="glass rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glow transition-all duration-300 relative overflow-hidden group"
+                className="glass rounded-xl pl-1.5 pr-4 py-2.5 flex items-center space-x-3 shadow-glass-lg hover:shadow-glow transition-all duration-300 relative overflow-hidden group"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

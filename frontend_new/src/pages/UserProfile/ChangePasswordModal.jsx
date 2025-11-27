@@ -112,7 +112,7 @@ export default function ChangePasswordModal({ onClose }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="glass rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gradient">Change Password</h2>
