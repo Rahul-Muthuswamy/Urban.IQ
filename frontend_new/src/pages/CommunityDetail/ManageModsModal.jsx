@@ -101,7 +101,7 @@ export default function ManageModsModal({ community, onClose, onSuccess }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="glass rounded-2xl p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-glass-xl border border-white/20"
+          className="bg-white rounded-2xl p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-glass-xl border border-white/20"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Manage Moderators</h2>
