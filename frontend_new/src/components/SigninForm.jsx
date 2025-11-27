@@ -50,10 +50,10 @@ export default function SigninForm({ formData, setFormData, errors, onSubmit, is
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="mb-6 flex items-center space-x-4"
+          className="flex items-center space-x-4"
         >
           <motion.img
-            src="/assets/3_remove_bg.png"
+            src="/assets/7_remove_bg.png"
             alt="Urban.IQ Logo"
             className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain"
             initial={{ scale: 0, rotate: -180 }}
@@ -76,7 +76,7 @@ export default function SigninForm({ formData, setFormData, errors, onSubmit, is
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.7, ease: [0.2, 0.9, 0.2, 1] }}
-          className="text-4xl md:text-5xl font-bold text-primary mb-3"
+          className="text-3xl md:text-4xl font-bold text-primary mb-3"
           style={{
             background: "linear-gradient(135deg, #84cc16 0%, #10b981 100%)",
             WebkitBackgroundClip: "text",
@@ -155,7 +155,7 @@ export default function SigninForm({ formData, setFormData, errors, onSubmit, is
             transition={{ delay: 0.8, duration: 0.6, ease: [0.2, 0.9, 0.2, 1] }}
             whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-            className="w-full py-4 md:py-5 rounded-xl bg-gradient-primary text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group mt-2 min-h-[48px] touch-manipulation"
+            className="w-full py-3 md:py-4 rounded-xl bg-gradient-primary text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group mt-2 min-h-[48px] touch-manipulation"
             style={{
               WebkitTapHighlightColor: "transparent",
             }}
@@ -220,7 +220,7 @@ export default function SigninForm({ formData, setFormData, errors, onSubmit, is
           transition={{ delay: 1, duration: 0.6, ease: [0.2, 0.9, 0.2, 1] }}
           whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
           whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-          className="w-full py-4 md:py-5 rounded-xl bg-white border-2 border-gray-200 text-gray-700 font-semibold text-base md:text-lg flex items-center justify-center space-x-3 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md min-h-[48px] touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 md:py-4 rounded-xl bg-white border-2 border-gray-200 text-gray-700 font-semibold text-base md:text-lg flex items-center justify-center space-x-3 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md min-h-[48px] touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             WebkitTapHighlightColor: "transparent",
           }}
@@ -234,7 +234,7 @@ export default function SigninForm({ formData, setFormData, errors, onSubmit, is
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.1, duration: 0.6 }}
-          className="mt-8 text-center text-xs text-gray-500"
+          className="mt-6 text-center text-xs text-gray-500"
         >
           © 2025 Urban.IQ. Licensed under the MIT License.
         </motion.p>
