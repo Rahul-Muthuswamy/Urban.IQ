@@ -41,3 +41,4 @@ CREATE INDEX IF NOT EXISTS idx_event_rsvps_event_id ON public.event_rsvps(event_
 CREATE INDEX IF NOT EXISTS idx_event_rsvps_user_id ON public.event_rsvps(user_id);
 CREATE INDEX IF NOT EXISTS idx_event_rsvps_status ON public.event_rsvps(status);
 
+
