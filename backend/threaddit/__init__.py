@@ -96,6 +96,7 @@ from threaddit.auth.oauth_routes import oauth
 from threaddit.reports.routes import reports
 from threaddit.moderation.routes import moderation
 from threaddit.chatbot.routes import chatbot
+from threaddit.events.routes import events
 
 app.register_blueprint(user)
 app.register_blueprint(threads)
@@ -108,3 +109,4 @@ app.register_blueprint(oauth)
 app.register_blueprint(reports)
 app.register_blueprint(moderation)
 app.register_blueprint(chatbot)
+app.register_blueprint(events)

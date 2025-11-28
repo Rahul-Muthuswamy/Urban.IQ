@@ -11,6 +11,7 @@ export default function ModeratorDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showReportsView, setShowReportsView] = useState(false);
+  const [activeTab, setActiveTab] = useState("reports"); // "reports" or "events"
   const [statusFilter, setStatusFilter] = useState("pending");
   const [page, setPage] = useState(1);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -134,6 +135,17 @@ export default function ModeratorDashboard() {
     enabled: !!user && (user.roles?.includes("admin") || user.roles?.includes("mod")),
   });
 
+  // Fetch pending events
+  const { data: pendingEvents, isLoading: pendingEventsLoading, refetch: refetchPendingEvents } = useQuery({
+    queryKey: ["pendingEvents"],
+    queryFn: async () => {
+      const response = await api.get("/api/events/pending");
+      return response.data;
+    },
+    enabled: !!user && (user.roles?.includes("admin") || user.roles?.includes("mod")) && showReportsView && activeTab === "events",
+    refetchInterval: showReportsView && activeTab === "events" ? 10000 : false, // Refetch every 10 seconds when events tab is open
+  });
+
   // Keep post mutation
   const { mutate: keepPost, isPending: isKeepingPost } = useMutation({
     mutationFn: async (reportId) => {
@@ -221,6 +233,56 @@ export default function ModeratorDashboard() {
     refetchTopReporters();
   };
 
+  // Approve event mutation
+  const { mutate: approveEvent, isPending: isApproving } = useMutation({
+    mutationFn: async (eventId) => {
+      const response = await api.post(`/api/events/${eventId}/approve`);
+      return response.data;
+    },
+    onSuccess: () => {
+      setSuccessMessage("Event approved and published successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      queryClient.invalidateQueries({ queryKey: ["pendingEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      refetchPendingEvents();
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.message || "Failed to approve event");
+      setTimeout(() => setErrorMessage(""), 5000);
+    },
+  });
+
+  // Reject event mutation
+  const { mutate: rejectEvent, isPending: isRejecting } = useMutation({
+    mutationFn: async (eventId) => {
+      const response = await api.post(`/api/events/${eventId}/reject`);
+      return response.data;
+    },
+    onSuccess: () => {
+      setSuccessMessage("Event rejected successfully");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      queryClient.invalidateQueries({ queryKey: ["pendingEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      refetchPendingEvents();
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.message || "Failed to reject event");
+      setTimeout(() => setErrorMessage(""), 5000);
+    },
+  });
+
+  const handleApproveEvent = (eventId) => {
+    if (window.confirm("Are you sure you want to approve and publish this event?")) {
+      approveEvent(eventId);
+    }
+  };
+
+  const handleRejectEvent = (eventId) => {
+    if (window.confirm("Are you sure you want to reject this event? The organizer will need to resubmit it.")) {
+      rejectEvent(eventId);
+    }
+  };
+
   const handleExportCSV = () => {
     const deletions = deletionsData?.deletions || [];
     if (deletions.length === 0) {
@@ -296,7 +358,7 @@ export default function ModeratorDashboard() {
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
                   Moderator Dashboard
                 </h1>
-                <p className="text-gray-600">Review and manage reported posts</p>
+                <p className="text-gray-600">Review and manage reported posts and pending events</p>
               </div>
               <motion.button
                 onClick={() => setShowReportsView(false)}
@@ -309,6 +371,30 @@ export default function ModeratorDashboard() {
                 </svg>
                 <span>Back to Dashboard</span>
               </motion.button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex space-x-4 mb-6">
+              <button
+                onClick={() => setActiveTab("reports")}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                  activeTab === "reports"
+                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg"
+                    : "glass text-gray-700 hover:bg-white/40"
+                }`}
+              >
+                Reports
+              </button>
+              <button
+                onClick={() => setActiveTab("events")}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                  activeTab === "events"
+                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg"
+                    : "glass text-gray-700 hover:bg-white/40"
+                }`}
+              >
+                Pending Events ({pendingEvents?.length || 0})
+              </button>
             </div>
           </motion.div>
 
@@ -336,8 +422,11 @@ export default function ModeratorDashboard() {
             )}
           </AnimatePresence>
 
-          {/* Filters */}
-          <motion.div
+          {/* Show Reports or Events based on active tab */}
+          {activeTab === "reports" ? (
+            <>
+              {/* Filters */}
+              <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -449,6 +538,152 @@ export default function ModeratorDashboard() {
                 Next
               </button>
             </motion.div>
+          )}
+            </>
+          ) : (
+            /* Pending Events Tab */
+            <>
+              {pendingEventsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : !pendingEvents || pendingEvents.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="glass rounded-2xl p-12 text-center shadow-glass-lg"
+                >
+                  <svg
+                    className="w-16 h-16 mx-auto text-gray-400 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">No Pending Events</h3>
+                  <p className="text-gray-600">All events have been reviewed. Great job!</p>
+                </motion.div>
+              ) : (
+                <div className="space-y-4">
+                  <AnimatePresence>
+                    {pendingEvents.map((event, index) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="glass rounded-2xl p-6 shadow-glass-lg"
+                      >
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-1">{event.title}</h3>
+                                <p className="text-sm text-gray-500">
+                                  Created by <Link to={`/user/${event.organizer?.username}`} className="text-primary hover:underline">{event.organizer?.username}</Link> • {new Date(event.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
+                                Pending
+                              </span>
+                            </div>
+                            <p className="text-gray-600 mb-4">{event.description}</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                              <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span><strong>Starts:</strong> {new Date(event.start_time).toLocaleString()}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span><strong>Ends:</strong> {new Date(event.end_time).toLocaleString()}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span><strong>Location:</strong> {event.address || event.pincode || "TBD"}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                                <span><strong>Community:</strong> <Link to={`/community/${event.community?.name?.replace("t/", "")}`} className="text-primary hover:underline">{event.community?.name || "N/A"}</Link></span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col md:flex-row gap-3 md:items-start">
+                            <motion.button
+                              onClick={() => handleApproveEvent(event.id)}
+                              disabled={isApproving || isRejecting}
+                              className="px-6 py-3 bg-green-500 text-white rounded-xl font-semibold shadow-lg hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                              whileHover={{ scale: isApproving || isRejecting ? 1 : 1.05 }}
+                              whileTap={{ scale: isApproving || isRejecting ? 1 : 0.95 }}
+                            >
+                              {isApproving ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  <span>Approving...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  <span>Approve</span>
+                                </>
+                              )}
+                            </motion.button>
+                            <motion.button
+                              onClick={() => handleRejectEvent(event.id)}
+                              disabled={isApproving || isRejecting}
+                              className="px-6 py-3 bg-red-500 text-white rounded-xl font-semibold shadow-lg hover:bg-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                              whileHover={{ scale: isApproving || isRejecting ? 1 : 1.05 }}
+                              whileTap={{ scale: isApproving || isRejecting ? 1 : 0.95 }}
+                            >
+                              {isRejecting ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  <span>Rejecting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  <span>Reject</span>
+                                </>
+                              )}
+                            </motion.button>
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="px-6 py-3 glass text-gray-700 rounded-xl font-semibold hover:bg-white/40 transition-all flex items-center justify-center space-x-2"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              <span>View</span>
+                            </Link>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </>
           )}
         </div>
 
