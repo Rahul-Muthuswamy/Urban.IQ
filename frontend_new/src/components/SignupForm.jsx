@@ -7,6 +7,7 @@ import CleanDivider from "./ui/CleanDivider.jsx";
 
 export default function SignupForm({ formData, setFormData, errors, onSubmit, isPending, onGitHubLogin }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [showTermsPopup, setShowTermsPopup] = useState(false);
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Icon components
@@ -198,9 +199,13 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
               />
               <span className="text-sm md:text-base text-gray-700 pt-0.5">
               I agree to the{" "}
-                <Link to="/terms" className="text-primary font-semibold hover:text-accent transition-colors">
+                <button 
+                  type="button"
+                  onClick={() => setShowTermsPopup(true)}
+                  className="text-primary font-semibold hover:text-accent transition-colors underline"
+                >
                   Terms & Conditions
-                </Link>
+                </button>
               </span>
             </motion.label>
           </motion.div>
@@ -307,6 +312,226 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
           © 2025 Urban.IQ. Licensed under the MIT License.
         </motion.p>
       </CleanAuthCard>
+
+      {/* Terms & Conditions Popup */}
+      {showTermsPopup && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowTermsPopup(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="bg-white rounded-2xl p-6 max-w-4xl max-h-[80vh] overflow-y-auto shadow-2xl pl-8 border-2 border-[#999]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-transparent bg-gradient-to-r from-primary to-accent bg-clip-text">
+                Terms & Conditions
+              </h2>
+              <button
+                onClick={() => setShowTermsPopup(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="prose prose-sm max-w-none text-gray-700 space-y-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 italic">Last Updated: 28th Nov, 2025</p>
+                <p className="my-2">
+                  Welcome to Urban.IQ, an AI-powered civic engagement platform designed to help communities access reliable civic information, participate in discussions, and navigate local services. By accessing or using Urban.IQ, you agree to the following Terms and Conditions.
+                </p>
+                <p className="font-semibold">Please read them carefully.</p>
+              </div>
+
+              <h3 className="text-lg font-semibold text-gray-800">1. Acceptance of Terms</h3>
+              <p>By using Urban.IQ, you acknowledge that you:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Have read and understood these Terms</li>
+                <li>Agree to comply with them</li>
+                <li>Are at least 13 years old or have parental permission</li>
+              </ul>
+              <p>If you do not agree, please discontinue use of the platform.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">2. Purpose of Urban.IQ</h3>
+              <p>Urban.IQ is designed to:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Provide civic information using AI and RAG</li>
+                <li>Enable community discussions and engagement</li>
+                <li>Assist users in finding polling locations and public services</li>
+                <li>Offer a safe and moderated civic-social environment</li>
+              </ul>
+              <p className="font-semibold">Urban.IQ does not provide legal, political, financial, or professional advice.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">3. User Responsibilities</h3>
+              <p>Users agree to:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Provide accurate information when creating an account</li>
+                <li>Use the platform ethically and respectfully</li>
+                <li>Not impersonate others or create fake profiles</li>
+                <li>Follow community guidelines and moderator instructions</li>
+                <li>Report harmful or suspicious activity responsibly</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold text-gray-800">4. AI Assistant Disclaimer</h3>
+              <p>The AI assistant:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Provides unbiased, neutral, and verified civic information</li>
+                <li>May decline to respond to biased, harmful, or manipulative prompts</li>
+                <li>Does not provide political recommendations</li>
+                <li>Should not be used to influence elections or campaigns</li>
+              </ul>
+              <p className="font-semibold">Urban.IQ is not responsible for decisions made based on AI output.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">5. Content Ownership</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Users retain rights to the content they post.</li>
+                <li>By posting, users grant Urban.IQ a license to display, modify, and distribute the content within the platform.</li>
+                <li>Urban.IQ may remove content that violates these Terms.</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold text-gray-800">6. Moderation</h3>
+              <p>Moderators (administrative users) may:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Review, flag, or remove content</li>
+                <li>Suspend or restrict accounts</li>
+                <li>Take actions to maintain platform integrity</li>
+              </ul>
+              <p>Users agree not to interfere with moderation tools or processes.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">7. Privacy & Data Usage</h3>
+              <p>Urban.IQ may collect:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Basic profile information</li>
+                <li>OAuth data (e.g., GitHub username)</li>
+                <li>Activity logs (posts, comments, messages)</li>
+                <li>Technical information (device, browser, location approximate)</li>
+              </ul>
+              <p>Data is used for:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Authentication</li>
+                <li>Platform functionality</li>
+                <li>Personalized content</li>
+                <li>Safety monitoring</li>
+                <li>Improving user experience</li>
+              </ul>
+              <p className="font-semibold">Sensitive political preferences are not collected or stored.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">8. Accessibility Commitment</h3>
+              <p>Urban.IQ follows inclusive design principles:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>ARIA tags for assistive technologies</li>
+                <li>NVDA screen-reader support</li>
+                <li>Keyboard navigability</li>
+                <li>Clear, high-contrast UI</li>
+              </ul>
+              <p>Users may report accessibility issues for improvement.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">9. Prohibited Behaviors / Misuse</h3>
+              <p>Users agree NOT to misuse Urban.IQ in any of the following ways:</p>
+              
+              <h4 className="text-md font-semibold text-gray-700 mt-3">A. Political Misuse</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Attempting to influence elections or campaigns</li>
+                <li>Spreading propaganda or politically biased content</li>
+                <li>Using AI to generate political persuasion arguments</li>
+              </ul>
+
+              <h4 className="text-md font-semibold text-gray-700 mt-3">B. Misinformation & Harm</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Sharing false civic data, hoaxes, or misleading information</li>
+                <li>Uploading harmful, hateful, or violent content</li>
+                <li>Threatening, harassing, or bullying others</li>
+              </ul>
+
+              <h4 className="text-md font-semibold text-gray-700 mt-3">C. Platform Manipulation</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Creating fake accounts, bots, or mass posting</li>
+                <li>Attempting to bypass moderation</li>
+                <li>Data scraping or reverse engineering the platform</li>
+              </ul>
+
+              <h4 className="text-md font-semibold text-gray-700 mt-3">D. Security Violations</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Attempting to breach, probe, or exploit system vulnerabilities</li>
+                <li>Injecting malware, phishing, or harmful links</li>
+                <li>Misusing OAuth tokens or JWT tokens</li>
+              </ul>
+
+              <h4 className="text-md font-semibold text-gray-700 mt-3">E. AI Misuse</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Prompting the AI to generate harmful or biased responses</li>
+                <li>Using the assistant for political persuasion</li>
+                <li>Attempting to manipulate model behavior</li>
+              </ul>
+
+              <h4 className="text-md font-semibold text-gray-700 mt-3">F. Privacy Violations</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Sharing others' personal information without consent</li>
+                <li>Stalking or tracking users</li>
+                <li>Abusing anonymous reporting features</li>
+              </ul>
+
+              <p className="font-semibold mt-3">Urban.IQ reserves the right to take action against misuse.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">10. Messaging & Communication</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Direct messages must remain respectful and safe.</li>
+                <li>Harassment, threats, or abusive behavior are prohibited.</li>
+                <li>Moderators may review messages if legally required or for safety.</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold text-gray-800">11. Account Suspension</h3>
+              <p>Urban.IQ may suspend accounts for:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Violating any terms listed here</li>
+                <li>Engaging in harmful or illegal activities</li>
+                <li>Repeatedly posting reported content</li>
+              </ul>
+              <p>Appeals may be submitted via the support channel.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">12. Liability Limitation</h3>
+              <p>Urban.IQ is not liable for:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Incorrect or incomplete civic information</li>
+                <li>User-generated content</li>
+                <li>Technical issues, outages, or data loss</li>
+              </ul>
+              <p className="font-semibold">The platform is provided "as is" without guarantees.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">13. Changes to Terms</h3>
+              <p>Urban.IQ may update these Terms at any time. Continued use constitutes acceptance of changes.</p>
+
+              <h3 className="text-lg font-semibold text-gray-800">14. Contact Information</h3>
+              <p>For questions or concerns, please contact:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Email: rahul.m.muthuswamy@gmail.com</li>
+              </ul>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowTermsPopup(false)}
+                className="px-6 py-2 bg-gradient-to-br from-primary to-accent text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

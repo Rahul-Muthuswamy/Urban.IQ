@@ -74,7 +74,7 @@ export default function ReportPostModal({ postId, onClose, onSuccess }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="glass rounded-2xl p-6 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-glass-xl"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-glass-xl"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Report Post</h2>
