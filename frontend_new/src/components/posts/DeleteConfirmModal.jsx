@@ -8,7 +8,7 @@ export default function DeleteConfirmModal({ postTitle, onConfirm, onCancel, isD
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="glass rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl"
+          className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-glass-xl"
         >
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
