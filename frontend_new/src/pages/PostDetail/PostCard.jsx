@@ -194,7 +194,7 @@ export default function PostCard({ post }) {
               d="M7 11l5-5m0 0l5 5m-5-5v12"
             />
           </svg>
-          <span className="text-sm font-medium">{postInfo.post_karma || 0} Karma</span>
+          <span className="text-sm font-medium">{postInfo.post_karma || 0} Community Points</span>
         </div>
       </div>
     </motion.article>

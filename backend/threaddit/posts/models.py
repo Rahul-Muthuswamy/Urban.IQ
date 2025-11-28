@@ -35,11 +35,19 @@ class Posts(db.Model):
         return self.media
 
     def patch(self, form_data, image):
-        self.content = form_data.get("content", self.content)
-        self.title = form_data.get("title", self.title)
-        self.handle_media(form_data.get("content_type"), image, form_data.get("content_url"))
+        print(f"[Posts] patch called with form_data: {form_data}, image: {image is not None}")
+        # Update content and title (only if provided, otherwise keep existing)
+        if "content" in form_data:
+            self.content = form_data.get("content")
+        if "title" in form_data:
+            self.title = form_data.get("title")
+        # Handle media updates
+        content_type = form_data.get("content_type")
+        content_url = form_data.get("content_url")
+        self.handle_media(content_type, image, content_url)
         self.is_edited = True
         db.session.commit()
+        print(f"[Posts] Post patched successfully")
 
     @classmethod
     def add(cls, form_data, image, user_id):
@@ -55,6 +63,7 @@ class Posts(db.Model):
         db.session.commit()
 
     def handle_media(self, content_type, image=None, url=None):
+        print(f"[Posts] handle_media called with content_type={content_type}, image={image is not None}, url={url}")
         if content_type == "media" and image:
             self.delete_media()
             url = None
@@ -73,8 +82,16 @@ class Posts(db.Model):
                 )
                 url = video_data.get("playback_url")
             self.media = url
+            print(f"[Posts] Media uploaded, new URL: {url}")
         elif content_type == "url" and url:
+            self.delete_media()
             self.media = url
+            print(f"[Posts] Media set to URL: {url}")
+        elif content_type == "text":
+            # Remove media when switching to text-only post
+            self.delete_media()
+            self.media = None
+            print(f"[Posts] Media removed (text-only post)")
 
     def __init__(self, user_id, subthread_id, title, media=None, content=None):
         self.user_id = user_id

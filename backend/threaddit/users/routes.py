@@ -34,11 +34,31 @@ def user_login():
     return jsonify({"message": "Invalid credentials"}), 401
 
 
-@user.route("/user/logout")
-@login_required
+@user.route("/user/logout", methods=["GET", "POST"])
 def user_logout():
-    logout_user()
-    return jsonify({"message": "Successfully logged out"}), 200
+    """
+    Logout endpoint - works even if user is not authenticated (handles edge cases)
+    """
+    try:
+        print(f"[Users] Logout request received")
+        print(f"[Users] Current user authenticated: {current_user.is_authenticated}")
+        
+        # Only logout if user is actually authenticated
+        if current_user.is_authenticated:
+            print(f"[Users] Logging out user: {current_user.id} ({current_user.username})")
+            logout_user()
+            print(f"[Users] User logged out successfully")
+        else:
+            print(f"[Users] User not authenticated, but logout called (session may have expired)")
+        
+        # Always return success to allow frontend to clear local state
+        return jsonify({"message": "Successfully logged out"}), 200
+    except Exception as e:
+        print(f"[Users] Error during logout: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # Still return success to allow frontend cleanup
+        return jsonify({"message": "Logged out (session cleared)"}), 200
 
 
 @user.route("/user/register", methods=["POST"])

@@ -6,6 +6,15 @@ import api from "../../api.js";
 export default function EditPostModal({ post, onClose, onSuccess }) {
   const queryClient = useQueryClient();
   const postInfo = post?.post_info || {};
+  const postId = postInfo?.id;
+  
+  console.log("[EditPostModal] Component initialized with post:", post);
+  console.log("[EditPostModal] Post ID:", postId);
+  console.log("[EditPostModal] Post info:", postInfo);
+  
+  if (!postId) {
+    console.error("[EditPostModal] ERROR: Post ID is missing!");
+  }
   
   const [title, setTitle] = useState(postInfo.title || "");
   const [content, setContent] = useState(postInfo.content || "");
@@ -28,19 +37,47 @@ export default function EditPostModal({ post, onClose, onSuccess }) {
 
   const { mutate: updatePost, isPending } = useMutation({
     mutationFn: async (formData) => {
-      const response = await api.patch(`/api/post/${postInfo.id}`, formData);
-      return response.data;
+      console.log("[EditPostModal] Sending PATCH request to /api/post/" + postId);
+      console.log("[EditPostModal] FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`  ${key}: [File] ${value.name} (${value.type}, ${value.size} bytes)`);
+        } else {
+          console.log(`  ${key}: ${value}`);
+        }
+      }
+      
+      if (!postId) {
+        throw new Error("Post ID is missing. Cannot update post.");
+      }
+      
+      try {
+        // Don't set Content-Type manually - axios will set it with boundary for FormData
+        const response = await api.patch(`/api/post/${postId}`, formData);
+        console.log("[EditPostModal] Update successful:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("[EditPostModal] Update failed:", error);
+        console.error("[EditPostModal] Error response:", error.response?.data);
+        console.error("[EditPostModal] Error status:", error.response?.status);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("[EditPostModal] Mutation success, invalidating queries...");
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+      if (postId) {
+        queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      }
       queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
       if (onSuccess) onSuccess();
     },
     onError: (error) => {
-      console.error("Error updating post:", error);
+      console.error("[EditPostModal] Mutation error:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to update post. Please try again.";
+      console.error("[EditPostModal] Error message:", errorMessage);
       setErrors({
-        submit: error.response?.data?.message || "Failed to update post. Please try again.",
+        submit: errorMessage,
       });
     },
   });
@@ -76,28 +113,51 @@ export default function EditPostModal({ post, onClose, onSuccess }) {
     e.preventDefault();
     setErrors({});
 
+    console.log("[EditPostModal] handleSubmit called");
+    console.log("[EditPostModal] Current state:", {
+      title: title.trim(),
+      content: content.trim(),
+      contentType,
+      hasMediaFile: !!mediaFile,
+      hasMediaUrl: !!mediaUrl,
+      hasExistingMedia: !!postInfo.media,
+    });
+
     if (!title.trim()) {
+      console.log("[EditPostModal] Validation failed: Title is required");
       setErrors({ title: "Title is required" });
+      return;
+    }
+
+    // Validate title length
+    if (title.trim().length > 300) {
+      console.log("[EditPostModal] Validation failed: Title too long");
+      setErrors({ title: "Title must be 300 characters or less" });
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title.trim());
-    if (content.trim()) {
-      formData.append("content", content.trim());
-    }
+    
+    // Always send content (even if empty, to allow clearing it)
+    formData.append("content", content.trim() || "");
 
+    // Determine content type and handle media
     if (contentType === "media" && mediaFile) {
+      console.log("[EditPostModal] Adding media file to FormData");
       formData.append("media", mediaFile);
       formData.append("content_type", "media");
-    } else if (contentType === "url" && mediaUrl) {
-      formData.append("content_url", mediaUrl);
+    } else if (contentType === "url" && mediaUrl.trim()) {
+      console.log("[EditPostModal] Adding media URL to FormData");
+      formData.append("content_url", mediaUrl.trim());
       formData.append("content_type", "url");
-    } else if (!mediaFile && !mediaUrl && !postInfo.media) {
-      // If removing media, send empty media
+    } else {
+      // No new media and no existing media, or explicitly removing media
+      console.log("[EditPostModal] Setting content_type to text (no media)");
       formData.append("content_type", "text");
     }
 
+    console.log("[EditPostModal] FormData prepared, calling updatePost mutation");
     updatePost(formData);
   };
 

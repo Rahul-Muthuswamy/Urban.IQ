@@ -74,30 +74,90 @@ def new_post():
 @posts.route("/post/<pid>", methods=["PATCH"])
 @login_required
 def update_post(pid):
-    image = request.files.get("media")
-    form_data = request.form.to_dict()
-    PostValidator().load(
-        {
-            "subthread_id": form_data.get("subthread_id"),
-            "title": form_data.get("title"),
-            "content": form_data.get("content"),
-        }
-    )
-    update_post = Posts.query.filter_by(id=pid).first()
-    if not update_post:
-        return jsonify({"message": "Invalid Post"}), 400
-    elif update_post.user_id != current_user.id:
-        return jsonify({"message": "Unauthorized"}), 401
-    update_post.patch(form_data, image)
-    return (
-        jsonify(
-            {
-                "message": "Post udpated",
-                "new_data": update_post.post_info[0].as_dict(current_user.id),
-            }
-        ),
-        200,
-    )
+    try:
+        print(f"[Posts] PATCH /api/post/{pid} - Request received from user {current_user.id}")
+        print(f"[Posts] Request content-type: {request.content_type}")
+        print(f"[Posts] Request form data: {request.form.to_dict()}")
+        print(f"[Posts] Request files: {list(request.files.keys())}")
+        
+        # Get the post first to check existence and ownership
+        update_post = Posts.query.filter_by(id=pid).first()
+        if not update_post:
+            print(f"[Posts] Post {pid} not found")
+            return jsonify({"message": "Invalid Post"}), 400
+        
+        if update_post.user_id != current_user.id:
+            print(f"[Posts] Unauthorized: User {current_user.id} tried to update post {pid} owned by {update_post.user_id}")
+            return jsonify({"message": "Unauthorized"}), 401
+        
+        # Get form data and file
+        image = request.files.get("media")
+        form_data = request.form.to_dict()
+        
+        print(f"[Posts] Form data received: {form_data}")
+        print(f"[Posts] Media file present: {image is not None}")
+        if image:
+            print(f"[Posts] Media file name: {image.filename}, content-type: {image.content_type}")
+        
+        # Validate title if provided (required field)
+        title = form_data.get("title", "").strip()
+        if not title:
+            print(f"[Posts] Validation failed: Title is required")
+            return jsonify({"message": "Title is required"}), 400
+        
+        # Validate title length (matching frontend maxLength)
+        if len(title) > 300:
+            print(f"[Posts] Validation failed: Title too long ({len(title)} chars, max 300)")
+            return jsonify({"message": "Title must be 300 characters or less"}), 400
+        
+        # Validate title minimum length
+        if len(title) < 1:
+            print(f"[Posts] Validation failed: Title is empty")
+            return jsonify({"message": "Title is required"}), 400
+        
+        # Use existing subthread_id for validation (subthread shouldn't change on update)
+        # Only validate if subthread_id is provided (optional for updates)
+        if form_data.get("subthread_id"):
+            try:
+                PostValidator().load(
+                    {
+                        "subthread_id": form_data.get("subthread_id"),
+                        "title": title,
+                        "content": form_data.get("content", ""),
+                    }
+                )
+            except Exception as e:
+                print(f"[Posts] Validation error: {str(e)}")
+                return jsonify({"message": f"Validation error: {str(e)}"}), 400
+        
+        # Update the post
+        print(f"[Posts] Updating post {pid}...")
+        update_post.patch(form_data, image)
+        
+        # Refresh the post to get updated data
+        db.session.refresh(update_post)
+        
+        # Get updated post info
+        post_info = PostInfo.query.filter_by(post_id=pid).first()
+        if not post_info:
+            print(f"[Posts] Warning: PostInfo not found for post {pid}")
+            return jsonify({"message": "Post updated but info not found"}), 500
+        
+        print(f"[Posts] Post {pid} updated successfully")
+        return (
+            jsonify(
+                {
+                    "message": "Post updated",
+                    "new_data": post_info.as_dict(current_user.id),
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        print(f"[Posts] Error updating post {pid}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Error updating post: {str(e)}"}), 500
 
 
 @posts.route("/post/<pid>", methods=["DELETE"])

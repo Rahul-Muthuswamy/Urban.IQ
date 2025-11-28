@@ -1,40 +1,93 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api.js";
 import VoteButtons from "../../components/VoteButtons.jsx";
+import PostActionMenu from "../../components/posts/PostActionMenu.jsx";
+import EditPostModal from "../../components/posts/EditPostModal.jsx";
+import DeleteConfirmModal from "../../components/posts/DeleteConfirmModal.jsx";
+import ReportPostModal from "../../components/posts/ReportPostModal.jsx";
 
 export default function ActionsBar({ post }) {
   const queryClient = useQueryClient();
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const postInfo = post.post_info || {};
   const currentUser = post.current_user || {};
   
+  // Get current user for ownership checks
+  const { data: currentUserData } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      try {
+        const response = await api.get("/api/user");
+        return response.data;
+      } catch {
+        return null;
+      }
+    },
+    retry: false,
+  });
+
   // Debug logging
   console.log("[ActionsBar] Post data:", {
     postId: postInfo.id,
     postKarma: postInfo.post_karma,
     currentUser: currentUser,
     has_upvoted: currentUser.has_upvoted,
+    saved: currentUser.saved,
   });
 
   // Save/Unsave mutation
-  const { mutate: toggleSave } = useMutation({
+  const { mutate: toggleSave, isPending: isSavePending } = useMutation({
     mutationFn: async (shouldSave) => {
+      console.log("[ActionsBar] Toggling save:", shouldSave);
       if (shouldSave) {
-        await api.put(`/api/posts/saved/${postInfo.id}`);
+        const response = await api.put(`/api/posts/saved/${postInfo.id}`);
+        console.log("[ActionsBar] Save response:", response.data);
+        return response.data;
       } else {
-        await api.delete(`/api/posts/saved/${postInfo.id}`);
+        const response = await api.delete(`/api/posts/saved/${postInfo.id}`);
+        console.log("[ActionsBar] Unsave response:", response.data);
+        return response.data;
       }
     },
     onSuccess: () => {
+      console.log("[ActionsBar] Save/Unsave successful, invalidating queries...");
       queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
+    },
+    onError: (error) => {
+      console.error("[ActionsBar] Save/Unsave error:", error);
+      alert(error.response?.data?.message || "Failed to save post. Please try again.");
+    },
+  });
+
+  // Delete mutation
+  const { mutate: deletePost, isPending: isDeletePending } = useMutation({
+    mutationFn: async () => {
+      await api.delete(`/api/post/${postInfo.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+      setShowDeleteModal(false);
+      // Navigate back or to home
+      window.location.href = "/home";
+    },
+    onError: (error) => {
+      console.error("[ActionsBar] Delete error:", error);
+      alert(error.response?.data?.message || "Failed to delete post. Please try again.");
     },
   });
 
   const handleShare = async () => {
     const postUrl = `${window.location.origin}/posts/${postInfo.id}`;
+    console.log("[ActionsBar] Sharing post:", postUrl);
 
     // Try Web Share API first
     if (navigator.share) {
@@ -46,10 +99,15 @@ export default function ActionsBar({ post }) {
         });
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 2000);
+        setShowShareMenu(false);
         return;
       } catch (error) {
         if (error.name !== "AbortError") {
-          console.error("Share failed:", error);
+          console.error("[ActionsBar] Share failed:", error);
+        } else {
+          // User cancelled, just close menu
+          setShowShareMenu(false);
+          return;
         }
       }
     }
@@ -57,25 +115,47 @@ export default function ActionsBar({ post }) {
     // Fallback to copy to clipboard
     try {
       await navigator.clipboard.writeText(postUrl);
+      console.log("[ActionsBar] Link copied to clipboard");
       setShareSuccess(true);
       setTimeout(() => setShareSuccess(false), 2000);
     } catch (error) {
-      console.error("Copy failed:", error);
+      console.error("[ActionsBar] Copy failed:", error);
       // Fallback: select text
       const textArea = document.createElement("textarea");
       textArea.value = postUrl;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand("copy");
+      try {
+        document.execCommand("copy");
+        console.log("[ActionsBar] Link copied using fallback method");
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+      } catch (err) {
+        console.error("[ActionsBar] Fallback copy failed:", err);
+        alert("Failed to copy link. Please copy manually: " + postUrl);
+      }
       document.body.removeChild(textArea);
-      setShareSuccess(true);
-      setTimeout(() => setShareSuccess(false), 2000);
     }
     setShowShareMenu(false);
   };
 
   const handleSave = () => {
+    console.log("[ActionsBar] Handle save called, current saved state:", currentUser.saved);
     toggleSave(!currentUser.saved);
+  };
+
+  const handleEdit = () => {
+    setShowEditModal(true);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleReport = () => {
+    setShowReportModal(true);
   };
 
   return (
@@ -170,21 +250,13 @@ export default function ActionsBar({ post }) {
           </div>
 
           {/* More Menu Button */}
-          <motion.button
-            className="p-2 rounded-xl glass text-gray-600 hover:bg-white/40 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="More options"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
-          </motion.button>
+          <PostActionMenu
+            post={post}
+            onSave={handleSave}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onReport={handleReport}
+          />
         </div>
       </div>
 
@@ -206,6 +278,39 @@ export default function ActionsBar({ post }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modals */}
+      {showEditModal && post && (
+        <EditPostModal
+          post={post}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            queryClient.invalidateQueries({ queryKey: ["post", postInfo.id] });
+            queryClient.invalidateQueries({ queryKey: ["posts"] });
+          }}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          postTitle={postInfo.title}
+          onConfirm={() => deletePost()}
+          onCancel={() => setShowDeleteModal(false)}
+          isDeleting={isDeletePending}
+        />
+      )}
+
+      {showReportModal && (
+        <ReportPostModal
+          postId={postInfo.id}
+          onClose={() => setShowReportModal(false)}
+          onSuccess={() => {
+            setShowReportModal(false);
+            alert("Post reported successfully. Thank you for keeping the community safe!");
+          }}
+        />
+      )}
     </motion.div>
   );
 }

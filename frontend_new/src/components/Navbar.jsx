@@ -62,19 +62,44 @@ export default function Navbar() {
   });
 
   const handleLogout = async () => {
+    console.log("[Navbar] Logout initiated");
     try {
+      // Close user menu if open
+      setShowUserMenu(false);
+      
+      console.log("[Navbar] Calling logout API...");
+      // Call logout endpoint (works even if session expired)
       await api.get("/api/user/logout");
-      localStorage.removeItem("user");
-      // Invalidate all queries to clear cache
-      queryClient.clear();
-      // Redirect to login
-      window.location.href = "/login";
+      console.log("[Navbar] Logout API call successful");
     } catch (error) {
-      console.error("Logout error:", error);
-      // Even if logout fails, clear local storage and redirect
+      console.error("[Navbar] Logout API error (continuing with cleanup):", error);
+      // Continue with cleanup even if API call fails
+    } finally {
+      // Always perform cleanup regardless of API response
+      console.log("[Navbar] Clearing local storage and cache...");
+      
+      // Remove user from localStorage
       localStorage.removeItem("user");
+      console.log("[Navbar] Local storage cleared");
+      
+      // Clear all React Query cache
       queryClient.clear();
-      window.location.href = "/login";
+      console.log("[Navbar] Query cache cleared");
+      
+      // Cancel all ongoing queries
+      queryClient.cancelQueries();
+      console.log("[Navbar] Ongoing queries cancelled");
+      
+      // Reset query client state
+      queryClient.resetQueries();
+      console.log("[Navbar] Query client reset");
+      
+      // Small delay to ensure cleanup completes
+      setTimeout(() => {
+        console.log("[Navbar] Redirecting to login...");
+        // Use window.location for full page reload to clear all state
+        window.location.href = "/login";
+      }, 100);
     }
   };
 

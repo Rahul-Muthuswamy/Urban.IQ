@@ -1,20 +1,42 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "../../api.js";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 
 export default function ProfileSidebar({ user, isOwnProfile, onActionSelect }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = async () => {
+    console.log("[ProfileSidebar] Logout initiated");
     try {
+      console.log("[ProfileSidebar] Calling logout API...");
       await api.get("/api/user/logout");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      console.log("[ProfileSidebar] Logout API call successful");
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("[ProfileSidebar] Logout API error (continuing with cleanup):", error);
+      // Continue with cleanup even if API call fails
+    } finally {
+      // Always perform cleanup regardless of API response
+      console.log("[ProfileSidebar] Clearing local storage and cache...");
+      
+      // Remove user from localStorage
+      localStorage.removeItem("user");
+      
+      // Clear all React Query cache
+      queryClient.clear();
+      queryClient.cancelQueries();
+      queryClient.resetQueries();
+      
+      console.log("[ProfileSidebar] Redirecting to login...");
+      
+      // Small delay to ensure cleanup completes
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 100);
     }
   };
 

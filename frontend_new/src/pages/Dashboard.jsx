@@ -352,7 +352,7 @@ export default function Dashboard() {
                             </div>
                             <div className="text-right">
                               <div className="text-lg font-bold text-gray-800">{userActivity.stats.total_karma}</div>
-                              <div className="text-xs text-gray-500">Karma</div>
+                              <div className="text-xs text-gray-500">Community Points</div>
                             </div>
                           </div>
 
@@ -406,7 +406,7 @@ export default function Dashboard() {
                               <div className="space-y-2">
                                 {userActivity.recent_posts.map((post) => (
                                   <Link key={post.id} to={`/posts/${post.id}`} className="block text-sm text-gray-600 hover:text-primary transition-colors">
-                                    • {post.title} (r/{post.community}) - {post.karma} karma
+                                    • {post.title} (r/{post.community}) - {post.karma} Community Points
                                   </Link>
                                 ))}
                               </div>
@@ -654,7 +654,7 @@ export default function Dashboard() {
                                   <div className="flex items-center space-x-4 text-xs text-gray-500">
                                     <span className="text-primary">r/{post.community}</span>
                                     <span>•</span>
-                                    <span>👍 {post.karma} karma</span>
+                                    <span>👍 {post.karma} Community Points</span>
                                     <span>•</span>
                                     <span>💬 {post.comments_count} comments</span>
                                     <span>•</span>
@@ -698,7 +698,7 @@ export default function Dashboard() {
                               <div className="flex items-center space-x-4 text-xs text-gray-500">
                                 <span className="font-medium text-gray-700">on: {comment.post_title}</span>
                                 <span>•</span>
-                                <span>👍 {comment.karma} karma</span>
+                                <span>👍 {comment.karma} Community Points</span>
                                 <span>•</span>
                                 <span>{comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ""}</span>
                               </div>
@@ -796,7 +796,7 @@ export default function Dashboard() {
                                     <div className="flex items-center space-x-4 text-xs text-gray-500">
                                       {post.community && <span className="text-primary">r/{post.community}</span>}
                                       {post.community && <span>•</span>}
-                                      <span>👍 {post.karma} karma</span>
+                                      <span>👍 {post.karma} Community Points</span>
                                       <span>•</span>
                                       <span>⭐ Saved {post.saved_at ? new Date(post.saved_at).toLocaleDateString() : ""}</span>
                                     </div>
