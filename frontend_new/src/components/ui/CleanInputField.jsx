@@ -22,11 +22,10 @@ export default function CleanInputField({
   error,
   disabled,
   showPasswordToggle = false,
-  showPassword,
-  onTogglePassword,
   className = "",
 }) {
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const handleFocus = (e) => {
@@ -92,7 +91,7 @@ export default function CleanInputField({
         {showPasswordToggle && (
           <button
             type="button"
-            onClick={onTogglePassword}
+            onClick={() => setShowPassword(!showPassword)}
             onMouseDown={(e) => e.preventDefault()}
             className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
             aria-label={showPassword ? "Hide password" : "Show password"}

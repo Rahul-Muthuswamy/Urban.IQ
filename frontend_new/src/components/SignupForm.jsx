@@ -6,7 +6,6 @@ import CleanInputField from "./ui/CleanInputField.jsx";
 import CleanDivider from "./ui/CleanDivider.jsx";
 
 export default function SignupForm({ formData, setFormData, errors, onSubmit, isPending, onGitHubLogin }) {
-  const [showPassword, setShowPassword] = useState(false);
   const [showTermsPopup, setShowTermsPopup] = useState(false);
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -171,8 +170,6 @@ export default function SignupForm({ formData, setFormData, errors, onSubmit, is
               error={Array.isArray(errors.password) ? errors.password[0] : errors.password}
               disabled={isPending}
               showPasswordToggle={true}
-              showPassword={showPassword}
-              onTogglePassword={() => setShowPassword(!showPassword)}
             />
           </motion.div>
 

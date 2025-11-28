@@ -240,5 +240,26 @@
     border-radius: 6px;
   } */
 
+  /* Disable browser password toggle buttons */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
+  }
+
+  /* Hide Edge password toggle */
+  input[type="password"]::-ms-reveal {
+    display: none !important;
+  }
+
+  /* Hide Chrome/Safari password toggle */
+  input[type="password"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
+  }
+
+  /* Additional browser password toggle hiding */
+  input[type="password"]::-webkit-textfield-decoration-container {
+    display: none !important;
+  }
+
 }
 
