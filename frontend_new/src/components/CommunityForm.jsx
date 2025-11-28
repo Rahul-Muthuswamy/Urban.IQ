@@ -197,7 +197,7 @@ export default function CommunityForm({ onSuccess }) {
         </div>
 
         {/* Banner Upload */}
-        <div>
+        {/* <div>
           <label className="block mb-3 text-sm md:text-base font-medium text-gray-700">
             Community Banner (Optional)
           </label>
@@ -208,7 +208,7 @@ export default function CommunityForm({ onSuccess }) {
             label="Upload Banner"
             isBanner
           />
-        </div>
+        </div> */}
 
         {/* General Error */}
         {errors.general && (

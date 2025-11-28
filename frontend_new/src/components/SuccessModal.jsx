@@ -24,7 +24,7 @@ export default function SuccessModal({ community, onClose }) {
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         onClick={(e) => e.stopPropagation()}
-        className="glass rounded-3xl p-8 md:p-10 max-w-md w-full shadow-glass-xl backdrop-blur-xl"
+        className="bg-white rounded-3xl p-8 md:p-10 max-w-md w-full shadow-glass-xl backdrop-blur-xl"
       >
         {/* Success Icon */}
         <motion.div
