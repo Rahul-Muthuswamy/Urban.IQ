@@ -911,17 +911,17 @@ For complete setup instructions, environment configuration, and contribution gui
   <tr>
     <td align="center">
       <strong>Muthuswamy M</strong><br/>
-      <a href="https://github.com/muthuswamy-m">GitHub</a> • 
+      <a href="https://github.com/Rahul-Muthuswamy">GitHub</a> • 
       <a href="https://linkedin.com/in/muthuswamy-m">LinkedIn</a>
     </td>
     <td align="center">
       <strong>Harish E</strong><br/>
-      <a href="https://github.com/harish-e">GitHub</a> • 
-      <a href="https://linkedin.com/in/harish-e">LinkedIn</a>
+      <a href="https://github.com/Harish-Elangovan-10">GitHub</a> • 
+      <a href="https://www.linkedin.com/in/harishelangovan/">LinkedIn</a>
     </td>
     <td align="center">
       <strong>Pradeesh L</strong><br/>
-      <a href="https://github.com/pradeesh-l">GitHub</a> • 
+      <a href="https://github.com/pradeeshl">GitHub</a> • 
       <a href="https://linkedin.com/in/pradeesh-l">LinkedIn</a>
     </td>
   </tr>
