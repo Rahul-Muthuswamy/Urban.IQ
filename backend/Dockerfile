@@ -28,12 +28,12 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV FLASK_APP=threaddit:app
 
 # Expose port 8000
-EXPOSE 8000
+EXPOSE 8080
 
 # Health check - check if server responds (root path should always respond)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/ || exit 1
+    CMD curl -f http://localhost:8080/ || exit 1
 
 # Run Gunicorn with production settings
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "threaddit:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "threaddit:app"]
 
