@@ -2,9 +2,9 @@
 
 <!-- PROJECT LOGOS -->
 <p align="center">
-  <img src="./assets/5_remove_bg.png" width="150" alt="UrbanIQ Logo"/>
+  <img src="./assets/5_remove_bg.png" width="150" alt="UrbanIQ Logo" style="vertical-align: middle;"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./assets/microsoft_logo.png" width="150" alt="Microsoft Logo" style="vertical-align: bottom; margin-top: 20px;"/>
+  <img src="./assets/microsoft_logo.png" width="150" alt="Microsoft Logo" style="vertical-align: middle;"/>
 </p>
 
 <br/>
@@ -75,35 +75,35 @@ UrbanIQ is an intelligent, AI-driven civic engagement platform that empowers cit
 
 ## 📑 **Table of Contents**
 
-➤ [**Overview**](#overview)  
+➤ [**Overview**](#-overview)  
 
-➤ [**Why UrbanIQ?**](#why-urbaniq)  
+➤ [**Why UrbanIQ?**](#-why-urbaniq)  
 
-➤ [**Design Philosophy**](#design-philosophy)  
+➤ [**Design Philosophy**](#-design-philosophy)  
 
-➤ [**Core Features**](#core-features)  
+➤ [**Core Features**](#-core-features)  
 
-➤ [**How It Works**](#how-it-works)  
+➤ [**How It Works**](#️-how-it-works)  
 
-➤ [**Architecture**](#architecture)  
+➤ [**Architecture**](#️-architecture)  
 
-➤ [**Technologies Used**](#technologies-used)  
+➤ [**Technologies Used**](#️-technologies-used)  
 
-➤ [**Screenshots**](#screenshots)  
+➤ [**Screenshots**](#-screenshots)  
 
-➤ [**PWA (Mobile Experience)**](#pwa-mobile-experience)  
+➤ [**PWA (Mobile Experience)**](#-pwa-mobile-experience)  
 
-➤ [**Challenges**](#challenges)  
+➤ [**Challenges**](#-challenges)  
 
-➤ [**Impact**](#impact)  
+➤ [**Impact**](#-impact)  
 
-➤ [**Future Enhancements**](#future-enhancements)  
+➤ [**Future Enhancements**](#-future-enhancements)  
 
-➤ [**Contributing**](#contributing)  
+➤ [**Contributing**](#-contributing)  
 
-➤ [**Team**](#team)  
+➤ [**Team**](#-team)  
 
-➤ [**License**](#license)
+➤ [**License**](#-license)
 
 <br/>
 
@@ -373,7 +373,7 @@ UrbanIQ delivers an app-like experience without app store dependencies:
 
 <br/>
 
-**2. Query Processing** – When users ask questions, the query is converted to embeddings using Azure OpenAI's text-embedding-ada-002 model.
+**2. Query Processing** – When users ask questions, the query is converted to embeddings using Azure OpenAI's text-embedding-small model.
 
 <br/>
 
@@ -625,7 +625,7 @@ Maintaining platform integrity involves multiple layers:
 
 ➤ Azure AI Foundry – Management of AI services  
 
-➤ Azure OpenAI – GPT-4o-mini and text-embedding-ada-002  
+➤ Azure OpenAI – GPT-4o-mini and text-embedding-small
 
 ➤ Azure Cosmos DB – Vector storage for RAG system  
 
@@ -911,17 +911,17 @@ For complete setup instructions, environment configuration, and contribution gui
   <tr>
     <td align="center">
       <strong>Muthuswamy M</strong><br/>
-      <a href="https://github.com/muthuswamy-m">GitHub</a> • 
+      <a href="https://github.com/Rahul-Muthuswamy">GitHub</a> • 
       <a href="https://linkedin.com/in/muthuswamy-m">LinkedIn</a>
     </td>
     <td align="center">
       <strong>Harish E</strong><br/>
-      <a href="https://github.com/harish-e">GitHub</a> • 
-      <a href="https://linkedin.com/in/harish-e">LinkedIn</a>
+      <a href="https://github.com/Harish-Elangovan-10">GitHub</a> • 
+      <a href="https://www.linkedin.com/in/harishelangovan/">LinkedIn</a>
     </td>
     <td align="center">
       <strong>Pradeesh L</strong><br/>
-      <a href="https://github.com/pradeesh-l">GitHub</a> • 
+      <a href="https://github.com/pradeeshl">GitHub</a> • 
       <a href="https://linkedin.com/in/pradeesh-l">LinkedIn</a>
     </td>
   </tr>
