@@ -49,7 +49,7 @@ export default function LeftSidebar({ onCommunitySelect, selectedCommunity }) {
         className="glass rounded-2xl p-4 shadow-glass"
       >
         <h3 className="text-sm font-bold text-gray-700 uppercase mb-4">All Communities</h3>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div className="space-y-2 max-h-96 overflow-y-auto overflow-x-hidden">
           {allCommunities.slice(0, 10).map((community, index) => {
             const communitySlug = community.name?.replace("t/", "") || community.title?.toLowerCase().replace(/\s+/g, "");
             return (
@@ -95,7 +95,7 @@ export default function LeftSidebar({ onCommunitySelect, selectedCommunity }) {
         className="glass rounded-2xl p-4 shadow-glass"
       >
         <h3 className="text-sm font-bold text-gray-700 uppercase mb-4">Popular Communities</h3>
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-x-hidden max-h-72">
           {popularCommunities.slice(0, 5).map((community, index) => {
             const communitySlug = community.name?.replace("t/", "") || community.title?.toLowerCase().replace(/\s+/g, "");
             return (

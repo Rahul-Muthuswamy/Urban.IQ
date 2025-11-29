@@ -273,7 +273,7 @@ export default function AIChatPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-gradient-to-br from-primary/5 via-white to-accent/5">
       <Navbar />
       <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 ml-5'></img>
 
@@ -408,7 +408,7 @@ export default function AIChatPage() {
                 key={idx}
                 className={`flex gap-3 sm:gap-4 md:gap-5 text-sm sm:text-base items-start ${
                   msg.role === "user"
-                    ? "text-transparent bg-gradient-to-r from-[#84cc16] to-[#10b891] font-medium bg-clip-text animate-fadeInUp mb-2 sm:mb-4 md:mb-6"
+                    ? "text-transparent w-fit bg-gradient-to-r from-[#84cc16] to-[#10b891] font-medium bg-clip-text animate-fadeInUp mb-2 sm:mb-4 md:mb-6"
                     : "text-[#222] mb-6 sm:mb-8 md:mb-10"
                 }`}
               >
