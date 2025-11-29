@@ -1,12 +1,20 @@
-# Python
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
+*.pyo
+*.pyd
 .Python
+
+# Virtual environments (all locations)
 venv/
 env/
 ENV/
+.venv/
+
+# Python package build artifacts
 *.egg-info/
 dist/
 build/
@@ -18,7 +26,7 @@ build/
 *.swo
 *~
 
-# Environment
+# Environment files
 .env
 .env.local
 .env.*.local
@@ -27,7 +35,7 @@ build/
 *.log
 logs/
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
@@ -40,8 +48,11 @@ Dockerfile
 .dockerignore
 docker-compose.yml
 
-# Migrations (keep schema.sql but ignore migrations folder if not needed)
-migrations/*.sql
+# Database migrations (not needed in container)
+migrations/
+
+# Schema SQL (not needed in container)
+schema.sql
 
 # Documentation
 *.md
@@ -52,15 +63,17 @@ tests/
 *_test.py
 test_*.py
 
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-migrations/
+# Scripts (not needed in container)
 *.bat
 *.sh
-schema.sql
-rag/
-migrations/
-docs/
+start_rag_service.bat
+start_rag_service.sh
+
+# RAG service (not deployed with main backend)
+threaddit/rag/venv/
+threaddit/rag/docs/
+threaddit/rag/*.json
+threaddit/rag/README.md
+threaddit/rag/requirements.txt
+threaddit/rag/start_rag_service.py
+threaddit/rag/Urban.IQ.code-workspace

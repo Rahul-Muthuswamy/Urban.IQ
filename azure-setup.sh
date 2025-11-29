@@ -279,3 +279,4 @@ echo "  az acr build --registry $ACR_NAME --image urbaniq-backend:latest ./backe
 echo "  az acr build --registry $ACR_NAME --image urbaniq-frontend:latest ./frontend_new"
 echo ""
 
+

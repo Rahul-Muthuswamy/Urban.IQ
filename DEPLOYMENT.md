@@ -522,3 +522,4 @@ az webapp config appsettings set \
 
 Your Urban.IQ application should now be live on Azure App Service.
 
+

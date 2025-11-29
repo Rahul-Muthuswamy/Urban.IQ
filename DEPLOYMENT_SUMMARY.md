@@ -405,3 +405,4 @@ curl https://urbaniq-frontend.azurewebsites.net/
 
 Proceed with testing and deployment following the checklist above.
 
+

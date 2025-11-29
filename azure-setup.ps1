@@ -234,3 +234,4 @@ Write-Host "  az acr build --registry $ACR_NAME --image urbaniq-backend:latest .
 Write-Host "  az acr build --registry $ACR_NAME --image urbaniq-frontend:latest ./frontend_new"
 Write-Host ""
 
+
