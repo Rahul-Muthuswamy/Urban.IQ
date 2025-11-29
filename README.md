@@ -54,7 +54,7 @@
 
 <!-- MAIN COVER IMAGE -->
 <p align="center">
-  <img src="./assets/urbaniq_cover.gif" width="850" alt="UrbanIQ Platform Preview"/>
+  <img src="./assets/urbaniq_front.gif" width="850" alt="UrbanIQ Platform Preview"/>
 </p>
 
 </div>
@@ -100,8 +100,6 @@ UrbanIQ is an intelligent, AI-driven civic engagement platform that empowers cit
 ➤ [**Future Enhancements**](#future-enhancements)  
 
 ➤ [**Contributing**](#contributing)  
-
-➤ [**Deployment**](#deployment)  
 
 ➤ [**Team**](#team)  
 
@@ -332,6 +330,24 @@ Maintaining a healthy civic environment requires robust moderation:
 ➤ Deletion capabilities with reason tracking  
 
 ➤ Export functionality for moderation data
+
+<br/>
+
+### **7. Progressive Web App**
+
+UrbanIQ delivers an app-like experience without app store dependencies:
+
+➤ Installable on home screen with one tap for instant access  
+
+➤ Offline caching for continued access  
+
+➤ Fast loading and smooth performance  
+
+➤ Works seamlessly across mobile, tablet, and desktop  
+
+➤ Service worker for background updates  
+
+➤ Lightweight and accessible on any device
 
 </div>
 
@@ -865,76 +881,17 @@ We welcome contributions to make UrbanIQ more accessible, inclusive, and effecti
 
 <br/>
 
-For detailed setup instructions, environment configuration, and local development guide, please refer to our [**Setup Documentation**](./SETUP.md).
+### **Development**
 
-</div>
+UrbanIQ is structured into frontend and backend components:
 
-<br/>
+➤ **Frontend** – React-based progressive web application with Azure integrations  
 
----
-
-<br/>
-
-## 🌐 **Deployment**
-
-<div style="border-left: 4px solid #0078D4; padding-left: 20px; margin: 20px 0;">
-
-### **Backend Deployment**
-
-**Database Setup**
-
-```bash
-# Create PostgreSQL database
-createdb urbaniq
-
-# Run schema
-psql urbaniq < backend/schema.sql
-```
+➤ **Backend** – Flask REST API and FastAPI RAG microservice
 
 <br/>
 
-**Production Deployment**
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run with Gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 run:app
-```
-
-<br/>
-
-**RAG Service**
-
-```bash
-cd backend/threaddit/rag
-uvicorn app_main:app --host 0.0.0.0 --port 8000 --workers 4
-```
-
-<br/>
-
-### **Frontend Deployment**
-
-**Build Production Assets**
-
-```bash
-cd frontend_new
-npm install
-npm run build
-```
-
-<br/>
-
-**Deploy to:**
-
-➤ Azure Static Web Apps  
-
-➤ Netlify  
-
-➤ Vercel  
-
-➤ Traditional web server (Nginx/Apache)
+For complete setup instructions, environment configuration, and contribution guidelines, refer to [**SETUP.md**](./SETUP.md).
 
 </div>
 
