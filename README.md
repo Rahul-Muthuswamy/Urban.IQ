@@ -54,7 +54,7 @@
 
 <!-- MAIN COVER IMAGE -->
 <p align="center">
-  <img src="./assets/urbaniq_front.gif" width="850" alt="UrbanIQ Platform Preview"/>
+  <img src="./assets/urbaniq_cover.gif" width="850" alt="UrbanIQ Platform Preview"/>
 </p>
 
 </div>
