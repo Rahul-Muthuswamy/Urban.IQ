@@ -39,7 +39,7 @@
 
 <!-- MAIN COVER IMAGE -->
 <p align="center">
-  <img src="./assets/urbaniq_cover.png" width="850" alt="UrbanIQ Platform Preview"/>
+  <img src="./assets/urbaniq_cover.gif" width="850" alt="UrbanIQ Platform Preview"/>
 </p>
 
 </div>
@@ -513,7 +513,7 @@ Maintaining platform integrity involves multiple layers:
 <div style="border-left: 4px solid #0078D4; padding-left: 20px; margin: 20px 0;">
 
 <p align="center">
-  <img src="./assets/urbaniq_pwa_mobile.jpeg" alt="UrbanIQ PWA Mobile" width="350"/>
+  <img src="./assets/urbaniq_pwa_mobile.png" alt="UrbanIQ PWA Mobile" width="350"/>
 </p>
 
 <br/>
@@ -638,77 +638,6 @@ We welcome contributions to make UrbanIQ more accessible, inclusive, and effecti
 
 For detailed setup instructions, environment configuration, and local development guide, please refer to our [**Setup Documentation**](./SETUP.md).
 
-</div>
-
-<br/>
-
----
-
-<br/>
-
-## 🌐 **Deployment**
-
-<div style="border-left: 4px solid #0078D4; padding-left: 20px; margin: 20px 0;">
-
-### **Backend Deployment**
-
-**Database Setup**
-
-```bash
-# Create PostgreSQL database
-createdb urbaniq
-
-# Run schema
-psql urbaniq < backend/schema.sql
-```
-
-<br/>
-
-**Production Deployment**
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run with Gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 run:app
-```
-
-<br/>
-
-**RAG Service**
-
-```bash
-cd backend/threaddit/rag
-uvicorn app_main:app --host 0.0.0.0 --port 8000 --workers 4
-```
-
-<br/>
-
-### **Frontend Deployment**
-
-**Build Production Assets**
-
-```bash
-cd frontend_new
-npm install
-npm run build
-```
-
-<br/>
-
-**Deploy to:**
-
-➤ Azure Static Web Apps  
-➤ Netlify  
-➤ Vercel  
-➤ Traditional web server (Nginx/Apache)
-
-</div>
-
-<br/>
-
----
 
 <br/>
 
