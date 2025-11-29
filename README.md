@@ -643,8 +643,7 @@ We welcome contributions to make UrbanIQ more accessible, inclusive, and effecti
 ➤ Python 3.11 or higher  
 ➤ Node.js 18 or higher  
 ➤ PostgreSQL database  
-➤ Azure account with required services  
-➤ Docker and Docker Compose (optional)
+➤ Azure account with required services
 
 <br/>
 
