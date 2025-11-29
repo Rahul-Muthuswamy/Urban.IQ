@@ -2,9 +2,9 @@
 
 <!-- PROJECT LOGOS -->
 <p align="center">
-  <img src="./assets/5_remove_bg.png" width="230" alt="UrbanIQ Logo"/>
+  <img src="./assets/5_remove_bg.png" width="150" alt="UrbanIQ Logo"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./assets/microsoft_logo.png" width="230" alt="Microsoft Logo" style="vertical-align: bottom; margin-top: 20px;"/>
+  <img src="./assets/microsoft_logo.png" width="150" alt="Microsoft Logo" style="vertical-align: bottom; margin-top: 20px;"/>
 </p>
 
 <br/>
