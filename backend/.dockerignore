@@ -52,3 +52,15 @@ tests/
 *_test.py
 test_*.py
 
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+migrations/
+*.bat
+*.sh
+schema.sql
+rag/
+migrations/
+docs/
