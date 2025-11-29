@@ -24,7 +24,6 @@ class Messages(db.Model):
         self.content = content
 
     def as_dict(self):
-        """Convert message to dictionary format."""
         try:
             return {
                 "message_id": self.id,
@@ -45,7 +44,6 @@ class Messages(db.Model):
             }
         except Exception as e:
             print(f"[Messages.as_dict] Error converting message to dict: {str(e)}")
-            # Return minimal dict if there's an error
             return {
                 "message_id": self.id,
                 "content": self.content or "",
@@ -55,7 +53,6 @@ class Messages(db.Model):
 
     @classmethod
     def get_inbox(cls, user_id):
-        """Get inbox with all conversations, showing the latest message from each contact."""
         try:
             my_case = case(
                 (Messages.sender_id == user_id, Messages.receiver_id),
@@ -78,12 +75,10 @@ class Messages(db.Model):
                 if not message:
                     continue
                     
-                # Determine the contact (the other user in the conversation)
                 contact = message.user_receiver if message.sender_id == user_id else message.user_sender
                 if not contact:
                     continue
                 
-                # Get unread count for this conversation
                 unread_count = Messages.query.filter(
                     and_(
                         Messages.sender_id == contact.id,

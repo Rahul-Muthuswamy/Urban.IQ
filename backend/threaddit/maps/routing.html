@@ -10,7 +10,6 @@
   <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
   <script src="config.js"></script>
   
-  <!-- Google Fonts for better typography -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
@@ -58,7 +57,6 @@
       border-radius: 0;
     }
 
-    /* Header */
     .header {
       position: absolute;
       top: 0;
@@ -96,7 +94,6 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* Route Planning Panel */
     #panel {
       position: absolute;
       top: 80px;
@@ -250,7 +247,6 @@
       display: none;
     }
 
-    /* Results Panel */
     .results-panel {
       position: absolute;
       bottom: var(--spacing-md);
@@ -316,7 +312,6 @@
       font-weight: 500;
     }
 
-    /* Responsive Design */
     @media (max-width: 768px) {
       .header {
         padding: 0 var(--spacing-sm);
@@ -341,7 +336,6 @@
       }
     }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -355,7 +349,6 @@
       border-radius: 3px;
     }
 
-    /* Notification animations */
     @keyframes slideInRight {
       from {
         opacity: 0;
@@ -378,7 +371,6 @@
       }
     }
 
-    /* Enhanced map styling */
     .atlas-map .atlas-control-container {
       margin: 10px;
     }
@@ -466,10 +458,8 @@
 <script>
 let map, routeURL, searchURL, datasource;
 
-// ⭐ Azure Maps API key loaded from config.js
 const AZURE_MAPS_KEY = window.CONFIG.AZURE_MAPS_KEY;
 
-// Initialize map
 map = new atlas.Map('map', {
   center: [-73.9, 40.82],
   zoom: 11,
@@ -489,7 +479,6 @@ map.events.add('ready', () => {
 
   map.layers.add(new atlas.layer.SymbolLayer(datasource));
 
-  // Services pipeline
   const pipeline = atlas.service.MapsURL.newPipeline(
     new atlas.service.MapControlCredential(map)
   );
@@ -498,7 +487,6 @@ map.events.add('ready', () => {
   searchURL = new atlas.service.SearchURL(pipeline);
 });
 
-// Helper: detect lat,lon
 function parseCoord(str) {
   if (!str.includes(',')) return null;
   const [a, b] = str.split(',').map(Number);
@@ -520,7 +508,6 @@ async function geocode(input) {
   return [r.results[0].position.lon, r.results[0].position.lat];
 }
 
-// Enhanced error handling with user-friendly messages
 function showError(message) {
   const errorDiv = document.createElement('div');
   errorDiv.style.cssText = `
@@ -573,7 +560,6 @@ function showSuccess(message) {
   }, 2000);
 }
 
-// Format distance for display
 function formatDistance(meters) {
   if (meters < 1000) {
     return Math.round(meters) + ' m';
@@ -582,7 +568,6 @@ function formatDistance(meters) {
   }
 }
 
-// Format duration for display
 function formatDuration(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -594,7 +579,6 @@ function formatDuration(seconds) {
   }
 }
 
-// Update results panel
 function updateResults(distance, duration) {
   document.getElementById('distance').textContent = formatDistance(distance);
   document.getElementById('duration').textContent = formatDuration(duration);
@@ -611,27 +595,28 @@ async function calculateRoute() {
     return;
   }
 
-  // Show loading state
   button.classList.add('loading');
   button.disabled = true;
 
   try {
     datasource.clear();
     document.getElementById('results').style.display = 'none';
-
     showSuccess("Finding optimal route...");
 
-    const startPoint = await geocode(start);
-    const endPoint = await geocode(end);
+    const startCoord = await geocode(start); 
+    const endCoord = await geocode(end);
+
+    const startPoint = new atlas.data.Position(startCoord[0], startCoord[1]);
+    const endPoint = new atlas.data.Position(endCoord[0], endCoord[1]);
 
     const result = await routeURL.calculateRouteDirections(
       atlas.service.Aborter.timeout(10000),
-      [startPoint, endPoint],
-      { 
-        travelMode: "car", 
-        sectionType: "traffic",
+      {
+        query: [startPoint, endPoint],
+        travelMode: "car",
         routeType: "fastest",
-        traffic: true
+        traffic: true,
+        sectionType: ["traffic"]
       }
     );
 
@@ -639,51 +624,38 @@ async function calculateRoute() {
     const route = geojson.features[0];
     const summary = result.routes[0].summary;
 
-    // Add route and markers to map
     datasource.add([
       route,
-      new atlas.data.Feature(new atlas.data.Point(startPoint), { 
-        title: "Start", 
+      new atlas.data.Feature(new atlas.data.Point(startPoint), {
+        title: "Start",
         iconImage: "pin-blue",
         color: "#27ae60"
       }),
-      new atlas.data.Feature(new atlas.data.Point(endPoint), { 
-        title: "End", 
+      new atlas.data.Feature(new atlas.data.Point(endPoint), {
+        title: "End",
         iconImage: "pin-red",
         color: "#e74c3c"
       })
     ]);
 
-    // Update map view with padding for UI elements
-    map.setCamera({ 
-      bounds: geojson.bbox, 
+    map.setCamera({
+      bounds: geojson.bbox,
       padding: { top: 100, bottom: 200, left: 420, right: 50 }
     });
 
-    // Update results
     updateResults(summary.lengthInMeters, summary.travelTimeInSeconds);
-    
     showSuccess("Route calculated successfully!");
 
   } catch (e) {
     console.error('Route calculation error:', e);
-    let errorMessage = "Unable to calculate route. Please check your locations and try again.";
-    
-    if (e.message.includes("geocode")) {
-      errorMessage = "Location not found. Please enter a valid address or coordinates.";
-    } else if (e.message.includes("timeout")) {
-      errorMessage = "Request timed out. Please check your connection and try again.";
-    }
-    
-    showError(errorMessage);
+    showError("Failed to calculate route. Check your inputs and try again.");
   } finally {
-    // Hide loading state
     button.classList.remove('loading');
     button.disabled = false;
   }
 }
 
-// Add keyboard support
+
 document.addEventListener('DOMContentLoaded', function() {
   const inputs = document.querySelectorAll('.input-field');
   inputs.forEach(input => {

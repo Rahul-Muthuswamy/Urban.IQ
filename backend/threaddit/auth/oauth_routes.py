@@ -11,12 +11,10 @@ from threaddit.config import (
     GITHUB_REDIRECT_URI,
 )
 
-# Frontend URL for redirects (can be overridden by env var)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
 
 oauth = Blueprint("oauth", __name__, url_prefix="/api/auth")
 
-# GitHub OAuth endpoints
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_API_URL = "https://api.github.com/user"
@@ -24,50 +22,37 @@ GITHUB_USER_API_URL = "https://api.github.com/user"
 
 @oauth.route("/github", methods=["GET"])
 def github_login():
-    """
-    Initiates GitHub OAuth flow.
-    Redirects user to GitHub authorization page.
-    """
+
     if not GITHUB_CLIENT_ID:
         return jsonify({"message": "GitHub OAuth is not configured. Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in your .env file."}), 500
 
-    # Generate a random state token for CSRF protection
     state = secrets.token_urlsafe(32)
     session["oauth_state"] = state
 
-    # Build GitHub authorization URL
     params = {
         "client_id": GITHUB_CLIENT_ID,
         "redirect_uri": GITHUB_REDIRECT_URI,
-        "scope": "user:email",  # Request email access
+        "scope": "user:email",  
         "state": state,
     }
 
     auth_url = f"{GITHUB_AUTHORIZE_URL}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
     
-    # Return redirect URL for frontend to handle
     return jsonify({"auth_url": auth_url}), 200
 
 
 @oauth.route("/github/callback", methods=["GET"])
 def github_callback():
-    """
-    Handles GitHub OAuth callback.
-    Exchanges authorization code for access token and fetches user data.
-    """
-    # Verify state parameter to prevent CSRF attacks
+
     state = request.args.get("state")
     stored_state = session.get("oauth_state")
     
     if not state or state != stored_state:
-        # Redirect to frontend with error
         frontend_url = request.args.get("frontend_redirect") or f"{FRONTEND_URL}/signin?error=invalid_state"
         return redirect(frontend_url)
     
-    # Clear state from session
     session.pop("oauth_state", None)
     
-    # Get authorization code from callback
     code = request.args.get("code")
     error = request.args.get("error")
     
@@ -80,7 +65,6 @@ def github_callback():
         return redirect(frontend_url)
     
     try:
-        # Exchange authorization code for access token
         token_response = requests.post(
             GITHUB_TOKEN_URL,
             headers={
@@ -110,7 +94,6 @@ def github_callback():
             frontend_url = request.args.get("frontend_redirect") or f"{FRONTEND_URL}/signin?error={error_description}"
             return redirect(frontend_url)
         
-        # Fetch user information from GitHub
         user_response = requests.get(
             GITHUB_USER_API_URL,
             headers={
@@ -133,7 +116,6 @@ def github_callback():
         github_name = github_user.get("name", "")
         github_bio = github_user.get("bio")
         
-        # If email is not public, fetch from emails endpoint
         if not github_email:
             emails_response = requests.get(
                 "https://api.github.com/user/emails",
@@ -145,7 +127,6 @@ def github_callback():
             )
             if emails_response.status_code == 200:
                 emails = emails_response.json()
-                # Find primary email or first verified email
                 primary_email = next((e.get("email") for e in emails if e.get("primary")), None)
                 verified_email = next((e.get("email") for e in emails if e.get("verified")), None)
                 github_email = primary_email or verified_email or (emails[0].get("email") if emails else None)
@@ -155,15 +136,12 @@ def github_callback():
             frontend_url = request.args.get("frontend_redirect") or f"{FRONTEND_URL}/signin?error=no_email"
             return redirect(frontend_url)
         
-        # Check if user exists by GitHub ID
         user = User.query.filter_by(github_id=github_id).first()
         
         if not user:
-            # Check if user exists by email (account linking)
             existing_user = User.query.filter_by(email=github_email).first()
             
             if existing_user:
-                # Link GitHub account to existing user
                 existing_user.github_id = github_id
                 existing_user.oauth_provider = "github"
                 if github_avatar and not existing_user.avatar:
@@ -171,32 +149,26 @@ def github_callback():
                 db.session.commit()
                 user = existing_user
             else:
-                # Create new user
-                # Generate a unique username from GitHub username
                 base_username = github_username.lower().replace("-", "_")
                 username = base_username
                 counter = 1
                 
-                # Ensure username is unique
                 while User.query.filter_by(username=username).first():
                     username = f"{base_username}_{counter}"
                     counter += 1
                 
-                # Split name if available
                 name_parts = github_name.split(" ", 1) if github_name else [None, None]
                 first_name = name_parts[0] if name_parts else None
                 last_name = name_parts[1] if len(name_parts) > 1 else None
                 
-                # Create new user without password (OAuth user)
                 user = User(
                     username=username,
                     email=github_email,
-                    password_hash=None,  # OAuth users don't have passwords
+                    password_hash=None,  
                     github_id=github_id,
                     oauth_provider="github",
                 )
                 
-                # Set additional profile information from GitHub
                 if github_avatar:
                     user.avatar = github_avatar
                 if first_name:
@@ -210,26 +182,21 @@ def github_callback():
                 
                 print(f"[GitHub OAuth] Created new user: {user.username} ({user.email})")
         else:
-            # Update existing user's info from GitHub (in case they changed it)
             if github_avatar and not user.avatar:
                 user.avatar = github_avatar
             
-            # Update name if not set
             if github_name and not user.first_name:
                 name_parts = github_name.split(" ", 1)
                 user.first_name = name_parts[0] if name_parts else None
                 user.last_name = name_parts[1] if len(name_parts) > 1 else None
             
-            # Update bio if not set
             if github_bio and not user.bio:
                 user.bio = github_bio
             
             db.session.commit()
         
-        # Log the user in
         login_user(user, remember=True)
         
-        # Redirect to frontend with success
         frontend_url = request.args.get("frontend_redirect") or f"{FRONTEND_URL}/home"
         return redirect(frontend_url)
         

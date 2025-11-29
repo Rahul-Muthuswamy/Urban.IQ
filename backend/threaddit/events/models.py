@@ -1,7 +1,3 @@
-"""
-Events Models
-This module defines the Event and EventRSVP database models for the Events/Meetups feature.
-"""
 from threaddit import db, ma
 from datetime import datetime
 from marshmallow import validate, ValidationError
@@ -9,22 +5,7 @@ from flask_marshmallow.fields import fields
 
 
 class Event(db.Model):
-    """
-    Event model - represents a community event or meetup.
-    
-    Fields:
-    - id: Primary key
-    - title: Event title (required)
-    - description: Event description (required)
-    - start_time: When the event starts (required)
-    - end_time: When the event ends (required)
-    - pincode: Location pincode (optional, for maps)
-    - address: Full address (optional)
-    - community_id: Which community this event belongs to (required)
-    - organizer_id: User who created the event (required)
-    - status: pending/published (default: pending)
-    - created_at: When the event was created
-    """
+
     __tablename__ = "events"
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -39,7 +20,6 @@ class Event(db.Model):
     status = db.Column(db.String(20), nullable=False, default="pending")  # pending, published, rejected
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.now())
     
-    # Relationships
     community = db.relationship("Subthread", backref="events")
     organizer = db.relationship("User", backref="organized_events")
     rsvps = db.relationship("EventRSVP", back_populates="event", cascade="all, delete-orphan")
@@ -57,15 +37,10 @@ class Event(db.Model):
         self.status = status
     
     def as_dict(self, current_user_id=None):
-        """
-        Convert event to dictionary for JSON response.
-        Includes RSVP counts and user's RSVP status if current_user_id is provided.
-        """
-        # Count RSVPs
+
         going_count = EventRSVP.query.filter_by(event_id=self.id, status="going").count()
         interested_count = EventRSVP.query.filter_by(event_id=self.id, status="interested").count()
         
-        # Get user's RSVP status
         user_rsvp = None
         if current_user_id:
             rsvp = EventRSVP.query.filter_by(event_id=self.id, user_id=current_user_id).first()
@@ -99,26 +74,16 @@ class Event(db.Model):
                 "interested": interested_count,
                 "total": going_count + interested_count,
             },
-            "user_rsvp": user_rsvp,  # "going", "interested", or None
+            "user_rsvp": user_rsvp,  
         }
     
     def validate_times(self):
-        """Validate that end_time is after start_time."""
         if self.end_time <= self.start_time:
             raise ValidationError("End time must be after start time")
 
 
 class EventRSVP(db.Model):
-    """
-    EventRSVP model - tracks user RSVPs for events.
-    
-    Fields:
-    - id: Primary key
-    - event_id: Which event (required)
-    - user_id: Which user (required)
-    - status: going/interested (required)
-    - created_at: When the RSVP was created
-    """
+
     __tablename__ = "event_rsvps"
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -127,11 +92,9 @@ class EventRSVP(db.Model):
     status = db.Column(db.String(20), nullable=False)  # going, interested
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.now())
     
-    # Relationships
     event = db.relationship("Event", back_populates="rsvps")
     user = db.relationship("User", backref="event_rsvps")
     
-    # Unique constraint: one RSVP per user per event
     __table_args__ = (db.UniqueConstraint("event_id", "user_id", name="unique_event_user_rsvp"),)
     
     def __init__(self, event_id, user_id, status):
@@ -142,7 +105,6 @@ class EventRSVP(db.Model):
         self.status = status
     
     def as_dict(self):
-        """Convert RSVP to dictionary for JSON response."""
         return {
             "id": self.id,
             "event_id": self.event_id,
@@ -157,16 +119,13 @@ class EventRSVP(db.Model):
         }
 
 
-# Marshmallow Schemas for Validation
 class EventValidator(ma.SQLAlchemySchema):
-    """Schema for validating event creation/update data."""
     
     class Meta:
         model = Event
     
     title = fields.Str(required=True, validate=validate.Length(min=1, max=200))
     description = fields.Str(required=True, validate=validate.Length(min=1, max=5000))
-    # Use DateTime field which accepts ISO format strings and converts to datetime objects
     start_time = fields.DateTime(required=True, format="iso")
     end_time = fields.DateTime(required=True, format="iso")
     pincode = fields.Str(required=False, allow_none=True, validate=validate.Length(max=20))
@@ -176,7 +135,6 @@ class EventValidator(ma.SQLAlchemySchema):
 
 
 class EventRSVPValidator(ma.SQLAlchemySchema):
-    """Schema for validating RSVP data."""
     
     class Meta:
         model = EventRSVP

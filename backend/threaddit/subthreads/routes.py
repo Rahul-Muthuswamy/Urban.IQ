@@ -224,27 +224,20 @@ def update_thread(tid):
         banner_image = request.files.get("banner")
         form_data = request.form.to_dict()
         
-        # Handle logo content type
         if logo_image:
             form_data["logo_content_type"] = "image"
         elif form_data.get("logo_content_type"):
-            # Already set by frontend
             pass
         elif form_data.get("content_type"):
-            # Legacy support
             form_data["logo_content_type"] = form_data.get("content_type")
             form_data["logo_url"] = form_data.get("content_url")
         
-        # Handle banner content type
         if banner_image:
             form_data["banner_content_type"] = "image"
         elif form_data.get("banner_content_type"):
-            # Already set by frontend
             pass
         
-        # Update name if provided (but don't allow changing it if it would conflict)
         if form_data.get("name") and form_data.get("name") != thread.name:
-            # Check if new name already exists
             existing = Subthread.query.filter_by(name=form_data.get("name")).first()
             if existing and existing.id != thread.id:
                 return jsonify({"message": "Community name already exists"}), 400

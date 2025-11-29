@@ -9,19 +9,16 @@ comments = Blueprint("comments", __name__, url_prefix="/api")
 
 @comments.route("/comments/post/<pid>", methods=["GET"])
 def get_comments(pid):
-    # First check if the post exists
     post_info = PostInfo.query.filter_by(post_id=pid).first()
     if not post_info:
         return jsonify({"message": "Invalid Post ID"}), 400
     
-    # Get comments for the post
     comments = (
         CommentInfo.query.filter_by(post_id=pid).order_by(CommentInfo.has_parent.desc(), CommentInfo.comment_id).all()
     )
     
     cur_user = current_user.id if current_user.is_authenticated else None
     
-    # Return successful response even if there are no comments
     return (
         jsonify(
             {

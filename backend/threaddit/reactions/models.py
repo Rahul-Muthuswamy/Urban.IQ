@@ -1,6 +1,5 @@
 from threaddit import db
 
-
 class Reactions(db.Model):
     __tablename__ = "reactions"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

@@ -35,7 +35,6 @@ export default function FindPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5">
       <Navbar />
-      <img src='/assets/7_remove_bg.png' alt='urban_iq' className='fixed top-0 left-0 z-[100] h-6 sm:h-6 md:h-8 lg:h-10 xl:h-12 object-contain pointer-events-auto mt-5 ml-5'></img>
 
       <main className="max-w-6xl mx-auto pt-24 md:pt-32 px-4 md:px-6 py-8 md:py-12">
         {/* Page Header */}
@@ -45,11 +44,11 @@ export default function FindPage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-3">
             Discover Content
           </h1>
           <p className="text-gray-600 text-lg">
-            Search posts, communities, and users across Urban.IQ
+            Search posts, communities, and users across Threaddit
           </p>
         </motion.div>
 

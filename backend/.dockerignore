@@ -1,4 +1,3 @@
-# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,8 +6,6 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-
-# Virtual environments (all locations)
 venv/
 env/
 ENV/
@@ -20,51 +17,29 @@ build/
 *.swp
 *.swo
 *~
-
-# Environment files
 .env
 .env.local
 .env.*.local
-
-# Logs
 *.log
 logs/
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Git
 .git/
 .gitignore
-
-# Docker
 Dockerfile
 .dockerignore
 docker-compose.yml
-
-# Database migrations (not needed in container)
 migrations/
-
-# Schema SQL (not needed in container)
 schema.sql
-
-# Documentation
 *.md
 README.md
-
-# Test files
 tests/
 *_test.py
 test_*.py
-
-# Scripts (not needed in container)
 *.bat
 *.sh
 start_rag_service.bat
 start_rag_service.sh
-
-# RAG service (not deployed with main backend)
 threaddit/rag/venv/
 threaddit/rag/docs/
 threaddit/rag/*.json

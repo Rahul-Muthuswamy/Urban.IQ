@@ -35,7 +35,6 @@ CORS(
     ],
 )
 
-# Only configure Cloudinary if credentials are provided
 if CLOUDINARY_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
     cloudinary.config(
         cloud_name=CLOUDINARY_NAME,
@@ -51,9 +50,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config["SECRET_KEY"] = SECRET_KEY
 
 
-# Session cookie configuration for cross-origin requests
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Use "Lax" for localhost, "None" for production with HTTPS
-app.config["SESSION_COOKIE_SECURE"] = False  # Set to True in production with HTTPS
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  
+app.config["SESSION_COOKIE_SECURE"] = False  
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_NAME"] = "session"
 app.config["SESSION_COOKIE_DOMAIN"] = None
