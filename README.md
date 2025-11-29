@@ -34,11 +34,11 @@
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
   <a href="./assets/presentation.pdf" target="_blank">
-    <img src="https://img.icons8.com/?size=512&id=117561&format=png" width="60" alt="Presentation"/>
+    <img src="https://img.icons8.com/?size=80&id=2HTLoy5OhioH&format=png" width="60" alt="Presentation"/>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
   <a href="#" target="_blank">
-    <img src="https://img.icons8.com/?size=512&id=12599&format=png" width="60" alt="Live Website"/>
+    <img src="https://img.icons8.com/?size=80&id=8bVNpI807DcA&format=png" width="60" alt="Live Website"/>
   </a>
 </p>
 
