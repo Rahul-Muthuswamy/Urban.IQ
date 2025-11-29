@@ -5,7 +5,6 @@
     <img src="https://img.shields.io/badge/Microsoft-0078D4?style=for-the-badge&logo=microsoft&logoColor=white">
     <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB">
     <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white">
-    <img src="./assets/urbaniq_front" alt="UrbanIQ Cover Image">
     <a href="./assets/presentation.pdf"> 
         <img src="https://cdn0.iconfinder.com/data/icons/logos-microsoft-office-365/128/Microsoft_Office-04-512.png" width=30 />
     </a>
@@ -17,6 +16,7 @@
     <a href="#">
         <img src="https://static.vecteezy.com/system/resources/previews/015/337/689/original/web-icon-web-sign-free-png.png" width=30 />
     </a>
+    <img src="./assets/urbaniq_cover.gif" alt="UrbanIQ Cover Image">
 </div>
 
 UrbanIQ is an intelligent, AI-driven civic engagement platform designed to empower citizens with accessible, verified information and tools to participate meaningfully in their communities. By combining conversational AI, real-time maps, community forums, and comprehensive moderation tools, UrbanIQ transforms civic participation from inaccessible and fragmented to organized, inclusive, and community-powered.
@@ -350,19 +350,17 @@ UrbanIQ follows a modular, scalable architecture:
 
 # Screenshots
 
-| Landing Page | Community Feed |
+| Landing Page | Sign Up Page |
 |--------------|----------------|
-| ![Landing Page](./assets/urbaniq_1_landing.png) | ![Community Feed](./assets/urbaniq_2_feed.png) |
-| Sign In | Dashboard |
-| ![Sign In](./assets/urbaniq_3_signin.png) | ![Dashboard](./assets/urbaniq_4_dashboard.png) |
-| Create Community | Create Post |
-| ![Create Community](./assets/urbaniq_5_create_community.png) | ![Create Post](./assets/urbaniq_6_create_post.png) |
-| AI Assistant | Voice Assistant |
-| ![AI Assistant](./assets/urbaniq_7_ai_chat.png) | ![Voice Assistant](./assets/urbaniq_8_voice.png) |
-| Azure Maps | Event Creation |
-| ![Azure Maps](./assets/urbaniq_9_maps.png) | ![Event Creation](./assets/urbaniq_10_events.png) |
-| Moderator Dashboard | User Profile |
-| ![Moderator Dashboard](./assets/urbaniq_11_moderator.png) | ![User Profile](./assets/urbaniq_12_profile.png) |
+| ![Landing Page](./assets/urbaniq_1_heropage.png) | ![Sign Up Page](./assets/urbaniq_2_signuppage.png) |
+| GitHub OAuth | Home Page |
+| ![GitHub OAuth](./assets/urbaniq_3_githuboauth.png) | ![Home Page](./assets/urbaniq_4_homepage.png) |
+| Discover Content | Event Page |
+| ![Discover Content](./assets/urbaniq_5_dicovercontent.png) | ![Event Page](./assets/urbaniq_6_eventpage.png) |
+| AI Assistant | Maps Page |
+| ![AI Assistant](./assets/urbaniq_7_aissistantpage.png) | ![Maps Page](./assets/urbaniq_8_mapspage.png) |
+| Chat Page | Dashboard Page |
+| ![Chat Page](./assets/urbaniq_9_chatpage.png) | ![Dashboard Page](./assets/urbaniq_10_dashboardpage.png) |
 
 # Challenges
 
