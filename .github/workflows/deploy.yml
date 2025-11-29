@@ -42,12 +42,9 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./backend
+        file: ./backend/Dockerfile
         push: true
-        tags: |
-          ${{ env.REGISTRY }}/urbaniq-backend:latest
-          ${{ env.REGISTRY }}/urbaniq-backend:${{ github.sha }}
-        cache-from: type=registry,ref=${{ env.REGISTRY }}/urbaniq-backend:buildcache
-        cache-to: type=registry,ref=${{ env.REGISTRY }}/urbaniq-backend:buildcache,mode=max
+        tags: ${{ secrets.REGISTRY }}/urbaniq-backend:latest
 
     # ============================================================
     # Build and Push Frontend Image
@@ -57,14 +54,9 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./frontend_new
+        file: ./frontend_new/Dockerfile
         push: true
-        tags: |
-          ${{ env.REGISTRY }}/urbaniq-frontend:latest
-          ${{ env.REGISTRY }}/urbaniq-frontend:${{ github.sha }}
-        cache-from: type=registry,ref=${{ env.REGISTRY }}/urbaniq-frontend:buildcache
-        cache-to: type=registry,ref=${{ env.REGISTRY }}/urbaniq-frontend:buildcache,mode=max
-        build-args: |
-          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+        tags: ${{ secrets.REGISTRY }}/urbaniq-frontend:latest
 
     # ============================================================
     # Deploy Backend to Azure App Service
@@ -74,7 +66,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.APP_BACKEND }}
-        images: ${{ env.REGISTRY }}/urbaniq-backend:${{ github.sha }}
+        images: ${{ env.REGISTRY }}/urbaniq-backend:latest
         resource-group: ${{ env.RESOURCE_GROUP }}
 
     # ============================================================
@@ -85,7 +77,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.APP_FRONTEND }}
-        images: ${{ env.REGISTRY }}/urbaniq-frontend:${{ github.sha }}
+        images: ${{ env.REGISTRY }}/urbaniq-frontend:latest
         resource-group: ${{ env.RESOURCE_GROUP }}
 
     # ============================================================
