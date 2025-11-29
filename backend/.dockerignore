@@ -13,13 +13,8 @@ venv/
 env/
 ENV/
 .venv/
-
-# Python package build artifacts
-*.egg-info/
 dist/
 build/
-
-# IDE
 .vscode/
 .idea/
 *.swp
