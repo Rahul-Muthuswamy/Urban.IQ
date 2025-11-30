@@ -27,27 +27,30 @@
 <br/>
 
 <!-- ACTION BUTTONS -->
-<div align="center" style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
-  <div style="text-align: center;">
+<div align="center" style="display: flex; justify-content: center; align-items: flex-start; gap: 60px; flex-wrap: wrap;">
+  <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
     <a href="https://youtu.be/Oz424BKqSl8" target="_blank">
       <img src="https://img.icons8.com/?size=512&id=19318&format=png" width="60" alt="Video Demo"/>
-      <br/>
-      <strong>▶ Watch Demo</strong>
     </a>
+    <div style="margin-top: 8px;">
+      <strong>▶ Watch Demo</strong>
+    </div>
   </div>
-  <div style="text-align: center;">
+  <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
     <a href="./assets/urbaniq_presentation.pdf" target="_blank">
       <img src="https://img.icons8.com/?size=80&id=2HTLoy5OhioH&format=png" width="60" alt="Presentation"/>
-      <br/>
-      <strong>📄 View Presentation</strong>
     </a>
+    <div style="margin-top: 8px;">
+      <strong>📄 View Presentation</strong>
+    </div>
   </div>
-  <div style="text-align: center;">
+  <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
     <a href="#" target="_blank">
       <img src="https://img.icons8.com/?size=80&id=8bVNpI807DcA&format=png" width="60" alt="Live Website"/>
-      <br/>
-      <strong>🌐 Visit Website</strong>
     </a>
+    <div style="margin-top: 8px;">
+      <strong>🌐 Visit Website</strong>
+    </div>
   </div>
 </div>
 
