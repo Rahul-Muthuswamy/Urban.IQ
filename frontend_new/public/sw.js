@@ -167,13 +167,22 @@ async function staleWhileRevalidateStrategy(request) {
   
   const fetchPromise = fetch(request)
     .then((networkResponse) => {
+      // Clone the response immediately before any potential consumption
       if (networkResponse && networkResponse.status === 200) {
-        const cache = caches.open(DYNAMIC_CACHE);
-        cache.then(c => c.put(request, networkResponse.clone()));
+        // Clone before caching to avoid "body already used" error
+        const responseClone = networkResponse.clone();
+        caches.open(DYNAMIC_CACHE).then(c => {
+          c.put(request, responseClone).catch(err => {
+            console.error('SW: Failed to cache response:', err);
+          });
+        });
       }
       return networkResponse;
     })
-    .catch(() => {});
+    .catch((error) => {
+      console.error('SW: Fetch failed in staleWhileRevalidate:', error);
+      return null;
+    });
   
   return cachedResponse || fetchPromise;
 }
