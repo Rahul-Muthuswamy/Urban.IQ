@@ -1,7 +1,13 @@
 from dotenv import dotenv_values
 import os
 
-env_vars = dotenv_values()
+# Load the backend environment from `Urban.IQ/backend/.env` regardless of
+# the current working directory.
+_THREEDIT_DIR = os.path.dirname(__file__)  # .../backend/threaddit
+_BACKEND_DIR = os.path.dirname(_THREEDIT_DIR)  # .../backend
+_ENV_PATH = os.path.join(_BACKEND_DIR, ".env")
+
+env_vars = dotenv_values(_ENV_PATH)
 
 DATABASE_URI = env_vars.get("DATABASE_URI") or os.getenv("DATABASE_URI")
 SECRET_KEY = env_vars.get("SECRET_KEY") or os.getenv("SECRET_KEY")

@@ -20,6 +20,20 @@ CREATE TABLE public.users (
     registration_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Ensure the `users` table matches the SQLAlchemy `User` model.
+-- This project defines the users table twice in this file; on a fresh DB
+-- the first CREATE TABLE wins, so we add the missing OAuth columns here.
+ALTER TABLE public.users
+    ALTER COLUMN password_hash DROP NOT NULL;
+
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS github_id TEXT UNIQUE;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS oauth_provider TEXT;
+
+-- Not currently mapped in the SQLAlchemy `User` model, but included in this schema.
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
+
 
 ---------------------------------------------------------
 -- SUBTHREADS (COMMUNITIES)

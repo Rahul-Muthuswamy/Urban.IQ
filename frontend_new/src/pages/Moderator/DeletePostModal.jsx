@@ -17,6 +17,9 @@ export default function DeletePostModal({ report, onClose, onSuccess }) {
           report_id: report.id,
         },
         data: deleteReason ? { reason: deleteReason } : undefined,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       return response.data;
     },

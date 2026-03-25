@@ -65,7 +65,12 @@ def user_logout():
 def user_register():
     if current_user.is_authenticated:
         return jsonify({"message": "Already logged in"}), 409
-    if register_form := request.json:
+    # Require JSON body so marshmallow can validate properly.
+    if not request.is_json or not request.json:
+        return jsonify({"message": "Request body is required"}), 400
+
+    try:
+        register_form = request.json
         UserRegisterValidator().load(register_form)
         new_user = User(
             register_form.get("username"),
@@ -74,7 +79,14 @@ def user_register():
         )
         new_user.add()
         return jsonify(new_user.as_dict()), 201
-    return jsonify({"message": "Invalid credentials"}), 401
+    except Exception as e:
+        # Avoid returning stack traces to clients; log server-side for debugging.
+        import traceback
+
+        print(f"[User Register] Failed: {str(e)}")
+        traceback.print_exc()
+        db.session.rollback()
+        return jsonify({"message": "Registration failed. Please try again."}), 500
 
 
 @user.route("/user", methods=["PATCH"])

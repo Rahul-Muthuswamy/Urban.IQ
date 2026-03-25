@@ -137,8 +137,8 @@ export default function PostActionMenu({ post, onSave, onEdit, onDelete, onRepor
               </motion.button>
             )}
 
-            {/* Report Option - Only for non-owners */}
-            {!isOwner && onReport && (
+            {/* Report Option - Always available for reporting violations */}
+            {onReport && (
               <motion.button
                 onClick={() => handleAction("report")}
                 className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 transition-colors text-left border-t border-gray-200"
@@ -152,7 +152,7 @@ export default function PostActionMenu({ post, onSave, onEdit, onDelete, onRepor
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                   />
                 </svg>
-                <span className="text-orange-600 font-medium">Report</span>
+                <span className="text-orange-600 font-medium">Report Post</span>
               </motion.button>
             )}
           </motion.div>
